@@ -1,0 +1,468 @@
+basePath: /api
+host: api.ofm.hug.cx
+info:
+  description: >+
+    Open flightmap data api.
+
+    Note: Every element and changeset may have any number of tags. A tag is
+    a Key-Value pair of Unicode strings of up to 255 full unicode characters (not
+    bytes) each.
+
+  title: openflightmaps
+  version: '0.0.1'
+consumes:
+  - application/json
+produces:
+  - application/json
+
+paths:
+  /info/regions:
+    get:
+      x-swagger-router-controller: Information
+      operationId: getRegions
+      description: 'Returns a list of available airspace regions / FIRs'
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Regions'
+      summary: List all Regions
+      tags: ["Information"]   
+  /changeset/_create:
+    put:
+      x-swagger-router-controller: Changeset
+      operationId: createChangeset
+      description: ''
+      parameters: []
+      responses:
+        '200':
+          description: OK
+          examples: {}
+          headers: {}
+      summary: Create new changeset
+      tags: ["NotImplementedYet"]
+  /changeset/{id}:
+    get:
+      x-swagger-router-controller: Changeset
+      operationId: getChangeset
+      description: ''
+      parameters:
+        - description: Unique changeset identifier
+          in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          examples: {}
+          headers: {}
+      summary: Download all changes associated with this changeset
+      tags: ["NotImplementedYet"]
+  /changeset/{id}/_close:
+    put:
+      x-swagger-router-controller: Changeset
+      operationId: closeChangeset
+      description: ''
+      parameters:
+        - description: Unique changeset identifier
+          in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          examples: {}
+          headers: {}
+      summary: Close changeset
+      tags: ["NotImplementedYet"]
+  /changeset/{id}/_expand_bbox:
+    post:
+      x-swagger-router-controller: Changeset
+      operationId: expandChangesetBbox
+      description: ''
+      parameters:
+        - description: Unique changeset identifier
+          in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          examples: {}
+          headers: {}
+      summary: Expand bounding box of change
+      tags: ["NotImplementedYet"]
+  /node/_create:
+    put:
+      x-swagger-router-controller: Node
+      operationId: createNode
+      description: ''
+      parameters:
+        - description: Node definition
+          name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/Node'
+      responses:
+        '200':
+          description: OK
+          examples: {}
+          headers: {}
+      summary: Create new node
+      tags: ["Nodes"]
+  /node/_search:
+    post:
+      x-swagger-router-controller: Node
+      operationId: searchNode
+      description: |
+        Search for objects in openflightmaps database.
+      parameters:
+        - description: Region identifier (e.g. FIR)
+          in: query
+          name: region
+          required: true
+          type: string
+        - description: return deleted nodes
+          in: query
+          name: deleted
+          default: false
+          required: false
+          type: boolean
+      responses:
+        '200':
+          description: OK
+          examples:
+            application/json:
+              entityids:
+                - '1'
+                - '2'
+                - '3'
+          headers: {}
+      summary: Search
+      tags: ["Nodes"]
+  /node/{id}:
+    delete:
+      x-swagger-router-controller: Node
+      operationId: deleteNode
+      parameters:
+        - description: Unique node identifier
+          in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          examples: {}
+          headers: {}
+        '404':
+          description: Node not found
+      summary: Delete
+      tags: ["Nodes"]
+    get:
+      x-swagger-router-controller: Node
+      operationId: getNode
+      description: ''
+      parameters:
+        - description: Unique node identifier
+          in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Node'
+          examples:
+            application/json: |-
+              {
+               "node_id": "555",
+               "revision": 16,
+               "deleted": false,
+               "timestamp": "2015-11-16T15:07:56.000Z",
+               "user_id": null,
+               "tags": {
+                 "fir": 5,
+                 "name": "LSMP 5 TMA",
+                 "type": "Ase/Abd"
+               }
+              }
+          headers: {}
+      summary: Get node data
+      tags: ["Nodes"]
+    put:
+      x-swagger-router-controller: Node
+      operationId: putNode
+      description: ''
+      parameters:
+        - description: Unique changeset identifier
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Node definition
+          name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/Node'
+      responses:
+        '200':
+          description: OK
+          examples: {}
+          headers: {}
+      summary: Replace node with new node
+      tags: ["Nodes"]
+  /node/{id}/_history:
+    get:
+      x-swagger-router-controller: Node
+      operationId: getNodeHistory
+      parameters:
+        - description: Unique node identifier
+          in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          examples: {}
+          headers: {}
+      summary: Get node history
+      tags: ["Nodes", "NotImplementedYet"]
+  /node/{id}/{revision}:
+    get:
+      x-swagger-router-controller: Node
+      operationId: getNodebyRevision
+      parameters:
+        - description: Unique node identifier
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Node revision
+          in: path
+          name: revision
+          required: true
+          type: number
+      responses:
+        '200':
+          description: OK
+          examples: {}
+          headers: {}
+      summary: Get specific revision of node
+      tags: ["Nodes", "NotImplementedYet"]
+  /nativeclient/org/{id}:
+    delete:
+      x-swagger-router-controller: NativeClient
+      operationId: deleteOrgNode
+      parameters:
+        - description: Unique identifier
+          in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          examples: {}
+          headers: {}
+        '404':
+          description: Node not found
+      summary: Delete
+      tags: ["NativeClient"]
+    get:
+      x-swagger-router-controller: NativeClient
+      operationId: getOrgNode
+      description: ''
+      parameters:
+        - description: Unique identifier
+          in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+      summary: Get node data
+      tags: ["NativeClient"]
+    put:
+      x-swagger-router-controller: NativeClient
+      operationId: updateOrgNode
+      description: ''
+      parameters:
+        - description: Unique identifier
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Node definition
+          name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/Node'
+      responses:
+        '200':
+          description: OK
+      summary: Replace node
+      tags: ["NativeClient"]
+  /nativeclient/org/_create:
+    put:
+      x-swagger-router-controller: NativeClient
+      operationId: createOrgNode
+      description: ''
+      parameters:
+        - description: Node definition
+          name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/Node'
+      responses:
+        '200':
+          description: OK
+      summary: Create new organisation
+      tags: ["NativeClient"]
+  /nativeclient/org/_search:
+    post:
+      x-swagger-router-controller: NativeClient
+      operationId: searchOrgNode
+      description: |
+        Return all org objects in database.
+      responses:
+        '200':
+          description: OK
+      summary: Search
+      tags: ["NativeClient"]
+  /nativeclient/user/{id}:
+    delete:
+      x-swagger-router-controller: NativeClient
+      operationId: deleteUserNode
+      parameters:
+        - description: Unique identifier
+          in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          examples: {}
+          headers: {}
+        '404':
+          description: Node not found
+      summary: Delete
+      tags: ["NativeClient"]
+    get:
+      x-swagger-router-controller: NativeClient
+      operationId: getUserNode
+      description: ''
+      parameters:
+        - description: Unique identifier
+          in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+      summary: Get node data
+      tags: ["NativeClient"]
+    put:
+      x-swagger-router-controller: NativeClient
+      operationId: updateUserNode
+      description: ''
+      parameters:
+        - description: Unique identifier
+          in: path
+          name: id
+          required: true
+          type: string
+        - description: Node definition
+          name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/Node'
+      responses:
+        '200':
+          description: OK
+      summary: Replace node
+      tags: ["NativeClient"]
+  /nativeclient/user/_create:
+    put:
+      x-swagger-router-controller: NativeClient
+      operationId: createUserNode
+      description: ''
+      parameters:
+        - description: Node definition
+          name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/Node'
+      responses:
+        '200':
+          description: OK
+      summary: Create new organisation
+      tags: ["NativeClient"]
+  /nativeclient/user/_search:
+    post:
+      x-swagger-router-controller: NativeClient
+      operationId: searchUserNode
+      description: |
+        Return all org objects in database.
+      responses:
+        '200':
+          description: OK
+      summary: Search
+      tags: ["NativeClient"]
+
+definitions:
+  Node:
+    type: object
+    required:
+      - node_id
+      - revision
+    properties:
+      node_id:
+        type: integer
+        format: int64
+      revision:
+        type: integer
+        format: int64
+      deleted:
+        type: boolean
+      timestamp:
+        type: string
+        format: datetime
+      user_id:
+        type: integer
+      tags:
+        type: object
+        items:
+          $ref: '#/definitions/Tags'
+      value:
+        type: string
+        format: xml
+  Tags:
+    additionalProperties:
+      type: string
+  Regions:
+    type: array
+    items:
+      $ref: '#/definitions/Region' 
+  Region:
+    type: object
+    additionalProperties:
+      type: string
+schemes:
+  - http
+swagger: '2.0'
+

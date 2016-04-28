@@ -1,0 +1,224 @@
+---
+swagger: "2.0"
+info:
+  description: "Open flightmap data api.\nNote: Every element and changeset may have\
+    \ any number of tags. A tag is a Key-Value pair of Unicode strings of up to 255\
+    \ full unicode characters (not bytes) each.\n"
+  version: "0.0.1"
+  title: "openflightmaps"
+host: "data.openflightmaps.org"
+basePath: "/api"
+schemes:
+- "https"
+paths:
+  /changeset/_create:
+    put:
+      tags: []
+      summary: "Create new changeset"
+      description: ""
+      operationId: "changeset_createPUT"
+      parameters: []
+      responses:
+        200:
+          description: "OK"
+          examples: {}
+          headers: {}
+      x-swagger-router-controller: "Default"
+  /changeset/{id}:
+    get:
+      tags: []
+      summary: "Download all changes associated with this changeset"
+      description: ""
+      operationId: "changesetIdGET"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Unique changeset identifier"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          examples: {}
+          headers: {}
+      x-swagger-router-controller: "Default"
+  /changeset/{id}/_close:
+    put:
+      tags: []
+      summary: "Close changeset"
+      description: ""
+      operationId: "changesetId_closePUT"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Unique changeset identifier"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          examples: {}
+          headers: {}
+      x-swagger-router-controller: "Default"
+  /changeset/{id}/_expand_bbox:
+    post:
+      tags: []
+      summary: "Expand bounding box of change"
+      description: ""
+      operationId: "changesetId_expand_bboxPOST"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Unique changeset identifier"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          examples: {}
+          headers: {}
+      x-swagger-router-controller: "Default"
+  /node/_create:
+    put:
+      tags: []
+      summary: "Create new node"
+      description: ""
+      operationId: "node_createPUT"
+      parameters: []
+      responses:
+        200:
+          description: "OK"
+          examples: {}
+          headers: {}
+      x-swagger-router-controller: "Default"
+  /node/_search:
+    post:
+      tags: []
+      summary: "Search"
+      description: "Search for objects in openflightmaps database.\n"
+      operationId: "node_searchPOST"
+      parameters:
+      - name: "fir"
+        in: "query"
+        description: "FIR identifier"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          examples:
+            application/json:
+              entityids:
+              - "1"
+              - "2"
+              - "3"
+          headers: {}
+      x-swagger-router-controller: "Default"
+  /node/{id}:
+    get:
+      tags: []
+      summary: "Get node XML data"
+      description: ""
+      operationId: "nodeIdGET"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Unique node identifier"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          examples: {}
+          headers: {}
+      x-swagger-router-controller: "Default"
+    put:
+      tags: []
+      summary: "Replace node with new XML"
+      description: ""
+      operationId: "nodeIdPUT"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Unique changeset identifier"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          examples: {}
+          headers: {}
+      x-swagger-router-controller: "Default"
+    delete:
+      tags: []
+      summary: "Delete"
+      operationId: "nodeIdDELETE"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Unique node identifier"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          examples: {}
+          headers: {}
+      x-swagger-router-controller: "Default"
+  /node/{id}/_history:
+    get:
+      tags: []
+      summary: "Get node history"
+      operationId: "nodeId_historyGET"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Unique node identifier"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          examples: {}
+          headers: {}
+      x-swagger-router-controller: "Default"
+  /node/{id}/_meta:
+    get:
+      tags: []
+      summary: "Get node metadata"
+      operationId: "nodeId_metaGET"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Unique node identifier"
+        required: true
+        type: "string"
+      responses:
+        200:
+          description: "OK"
+          examples: {}
+          headers: {}
+      x-swagger-router-controller: "Default"
+  /node/{id}/{revision}:
+    get:
+      tags: []
+      summary: "Get specific revision of node"
+      operationId: "nodeIdRevisionGET"
+      parameters:
+      - name: "id"
+        in: "path"
+        description: "Unique node identifier"
+        required: true
+        type: "string"
+      - name: "revision"
+        in: "path"
+        description: "Node revision"
+        required: true
+        type: "number"
+      responses:
+        200:
+          description: "OK"
+          examples: {}
+          headers: {}
+      x-swagger-router-controller: "Default"
+definitions: {}
