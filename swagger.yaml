@@ -310,7 +310,9 @@ paths:
       responses:
         '200':
           description: OK
-      summary: Replace node
+          examples: {}
+          headers: {}
+      summary: Replace node with new node
       tags: ["NativeClient"]
   /nativeclient/org/_create:
     put:
@@ -327,6 +329,8 @@ paths:
       responses:
         '200':
           description: OK
+          examples: {}
+          headers: {}
       summary: Create new organisation
       tags: ["NativeClient"]
   /nativeclient/org/_search:
@@ -338,89 +342,13 @@ paths:
       responses:
         '200':
           description: OK
-      summary: Search
-      tags: ["NativeClient"]
-  /nativeclient/user/{id}:
-    delete:
-      x-swagger-router-controller: NativeClient
-      operationId: deleteUserNode
-      parameters:
-        - description: Unique identifier
-          in: path
-          name: id
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-          examples: {}
+          examples:
+            application/json:
+              entityids:
+                - '1'
+                - '2'
+                - '3'
           headers: {}
-        '404':
-          description: Node not found
-      summary: Delete
-      tags: ["NativeClient"]
-    get:
-      x-swagger-router-controller: NativeClient
-      operationId: getUserNode
-      description: ''
-      parameters:
-        - description: Unique identifier
-          in: path
-          name: id
-          required: true
-          type: string
-      responses:
-        '200':
-          description: OK
-      summary: Get node data
-      tags: ["NativeClient"]
-    put:
-      x-swagger-router-controller: NativeClient
-      operationId: updateUserNode
-      description: ''
-      parameters:
-        - description: Unique identifier
-          in: path
-          name: id
-          required: true
-          type: string
-        - description: Node definition
-          name: body
-          required: true
-          in: body
-          schema:
-            $ref: '#/definitions/Node'
-      responses:
-        '200':
-          description: OK
-      summary: Replace node
-      tags: ["NativeClient"]
-  /nativeclient/user/_create:
-    put:
-      x-swagger-router-controller: NativeClient
-      operationId: createUserNode
-      description: ''
-      parameters:
-        - description: Node definition
-          name: body
-          required: true
-          in: body
-          schema:
-            $ref: '#/definitions/Node'
-      responses:
-        '200':
-          description: OK
-      summary: Create new organisation
-      tags: ["NativeClient"]
-  /nativeclient/user/_search:
-    post:
-      x-swagger-router-controller: NativeClient
-      operationId: searchUserNode
-      description: |
-        Return all org objects in database.
-      responses:
-        '200':
-          description: OK
       summary: Search
       tags: ["NativeClient"]
 
@@ -463,6 +391,5 @@ definitions:
     additionalProperties:
       type: string
 schemes:
-  - http
+  - https
 swagger: '2.0'
-
