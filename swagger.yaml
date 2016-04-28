@@ -1,7 +1,4 @@
 swagger: '2.0'
-schemes:
-  - https
-host: api.ofm.hug.cx
 basePath: /api
 info:
   description: >+
