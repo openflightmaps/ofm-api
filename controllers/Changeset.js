@@ -1,7 +1,6 @@
 'use strict';
 
 module.exports.createChangeset = function createChangeset (req, res, next) {
-  console.log("yeah");
   var result = {};
 
   res.setHeader('Content-Type', 'application/json');

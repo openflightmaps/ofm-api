@@ -56,16 +56,13 @@ var CONST_OAD_DB = 3; // Public workspace
 
 /*
 module.exports.getNode = function getNode (req, res, next) {
-  console.log("getNode");
   s4.where('ServiceEntityID', req.swagger.params.id.value).where('ParentServiceID', CONST_OAD_DB ).fetch().then(function(result) {
-    console.log(result);
     if (!result) {
       res.statusCode = 404;
       return res.end();
     }
 
     s3a3.where('ServiceEntityID', req.swagger.params.id.value).where('ServiceEntityPropertiesTypeId', CONST_XML).fetch().then(function(result) {
-      console.log(result);
       if (!result) {
         return next("nodatafound");
       }
@@ -78,11 +75,9 @@ module.exports.getNode = function getNode (req, res, next) {
 */
 
 module.exports.getNode = function (req, res, next) {
-  console.log("getNode");
   var id = req.swagger.params.id.value;
   s4.where('ServiceEntityID', id).where('ParentServiceID', CONST_OAD_DB ).fetch().then(function(result) {
     var attributes = result.attributes;
-    console.log(result);
     if (!result) {
       res.statusCode = 404;
       return res.end();
@@ -99,7 +94,6 @@ module.exports.getNode = function (req, res, next) {
     Promise.join(a1, a2, a3, a4, a5, a6, a7, function(a1, a2, a3, a4, a5, a6, a7) {
       var result = [];
       result = result.concat(a1.toJSON(), a2.toJSON(), a3.toJSON(), a4.toJSON(), a5.toJSON(), a6.toJSON(), a7.toJSON());
-      console.log(result);
       var merged = {};
       var value = undefined;
       var et = cached.entity_types.value();
@@ -124,19 +118,15 @@ module.exports.getNode = function (req, res, next) {
 };
 
 module.exports.putNode = function putNode (req, res, next) {
-  console.log("putNode");
   var id = req.swagger.params.id.value;
   var body = req.swagger.body;
-  console.log (body);
   s4.where('ServiceEntityID', req.swagger.params.id.value).where('ParentServiceID', CONST_OAD_DB ).fetch().then(function(result) {
-    console.log(result);
     if (!result) {
       res.statusCode = 404;
       return res.end();
     }
 
     s3a3.where('ServiceEntityID', req.swagger.params.id.value).where('ServiceEntityPropertiesTypeId', CONST_XML).fetch().then(function(result) {
-      console.log(result);
       if (!result) {
         return next("nodatafound");
       }
@@ -147,11 +137,8 @@ module.exports.putNode = function putNode (req, res, next) {
   });
 };
 module.exports.searchNode = function getNode (req, res, next) {
-  console.log("searchNode");
   var deleted = req.swagger.params.deleted.value;
   var region = cached.regions.value().by_name[req.swagger.params.region.value];
-console.log(req.swagger.params.region.value);
-console.log(cached.regions);
   if (!region) {
     return next("invalid region");
   }

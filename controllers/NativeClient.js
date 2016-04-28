@@ -50,10 +50,8 @@ var o1 = {
   7: u2a7, // bool
 };
 module.exports.getOrgNode = function (req, res, next) {
-  console.log("getOrgNode");
   var id = req.swagger.params.id.value;
   o1t.where('OrganizationID', req.swagger.params.id.value).fetch().then(function(result) {
-    console.log(result);
     if (!result) {
       res.statusCode = 404;
       return res.end();
@@ -71,7 +69,6 @@ module.exports.getOrgNode = function (req, res, next) {
     Promise.join(o1, o2, o3, o4, o5, o6, o7, function(o1, o2, o3, o4, o5, o6, o7) {
       var result = [];
       result = result.concat(o1.toJSON(), o2.toJSON(), o3.toJSON(), o4.toJSON(), o5.toJSON(), o6.toJSON(), o7.toJSON());
-      console.log(result);
       var merged = {};
       var value = undefined;
       var result = result.map(function(v) {
@@ -94,8 +91,6 @@ module.exports.getOrgNode = function (req, res, next) {
 };
 
 module.exports.searchOrgNode = function (req, res, next) {
-  console.log("searchOrgNode");
-
   o1t.fetchAll().then(function(result) {
     var orgs = {};
     var result = result.toJSON().map(function(v) { orgs[v.OrganizationID] = v.OrganizationName });
@@ -106,10 +101,8 @@ module.exports.searchOrgNode = function (req, res, next) {
 };
 
 module.exports.getUserNode = function (req, res, next) {
-  console.log("getUserNode");
   var id = req.swagger.params.id.value;
   u1t.where('UserID', req.swagger.params.id.value).fetch().then(function(result) {
-    console.log(result);
     if (!result) {
       res.statusCode = 404;
       return res.end();
@@ -169,11 +162,8 @@ module.exports.getUserNode = function (req, res, next) {
 };
 
 module.exports.searchUserNode = function (req, res, next) {
-  console.log("searchUserNode");
-
   u1t.fetchAll().then(function(result) {
     var users = {};
-console.log(result.toJSON());
     var result = result.toJSON().map(function(v) { users[v.UserID] = {uid: v.UserID, username:  v.Username, language: v.MainlanguagePref }});
 
     res.setHeader('Content-Type', 'application/json');
@@ -182,10 +172,8 @@ console.log(result.toJSON());
 };
 
 module.exports.getPermissionNode = function (req, res, next) {
-  console.log("getPermissionNode");
   var id = req.swagger.params.id.value;
   u1t.where('PermissionID', req.swagger.params.id.value).fetch().then(function(result) {
-    console.log(result);
     if (!result) {
       res.statusCode = 404;
       return res.end();
@@ -245,11 +233,8 @@ module.exports.getPermissionNode = function (req, res, next) {
 };
 
 module.exports.searchPermissionNode = function (req, res, next) {
-  console.log("searchPermissionNode");
-
   u1t.fetchAll().then(function(result) {
     var users = {};
-console.log(result.toJSON());
     var result = result.toJSON().map(function(v) { users[v.PermissionID] = {uid: v.PermissionID, username:  v.Permissionname, language: v.MainlanguagePref }});
 
     res.setHeader('Content-Type', 'application/json');

@@ -36,7 +36,6 @@ module.exports.services = new Promise(function(resolve, reject) {
   s1.then(function(s1) {
     var services = {};
     s1.toJSON().map(function(obj) {services[obj.ServiceID] = {description: obj.ServiceName}});
-console.log(services);
     resolve(services);
   });
 });

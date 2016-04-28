@@ -13,7 +13,6 @@ var db_regions = db.Model.extend({
 
 module.exports.getRegions = function(req, res, next) {
   db_regions.fetchAll().then(function(result) {
-    console.log(result);
     if (!result) {
       res.statusCode = 404;
       return res.end();
