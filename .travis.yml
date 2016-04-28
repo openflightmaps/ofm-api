@@ -7,3 +7,5 @@ after_success:
   - ssh-add .travis/deploy_key.pem
   - git remote add deploy $DEPLOY_REPO
   - git push deploy
+addons:
+  ssh_known_hosts: ofm.hug.cx
