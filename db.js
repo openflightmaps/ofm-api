@@ -1,5 +1,5 @@
 var url = require('url');
-var db_url = url.parse(process.env.DATABASE_URL || "mysql://root:root@localhost/ofm");
+var db_url = url.parse(process.env.DATABASE_URL || "mysql://root:root@localhost:3306/ofm");
 
 var knex = require('knex')({
   client: db_url.protocol.substr(0, db_url.protocol.length - 1),
