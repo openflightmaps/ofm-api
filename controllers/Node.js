@@ -27,7 +27,7 @@ module.exports.getNode = function (req, res, next) {
     var p = [];
     for (var i = 1; i<8; i++) {
       var columns = ["PK", "ServiceEntityPropertiesTypeID"];
-      if (i<7)
+      if (i != 6)
         columns.push("ServiceEntityPropertiesTypeValue");
       p.push(db_node[i].where('ServiceEntityID', req.swagger.params.id.value).fetchAll({columns: columns}));
     }      
@@ -41,12 +41,13 @@ module.exports.getNode = function (req, res, next) {
         var t = v.ServiceEntityPropertiesTypeID;
 	var field;
         var val =  v.ServiceEntityPropertiesTypeValue;
-        if (val instanceof Buffer)
-          val = app_url + "/api/blobstore/" + v.PK;
 
 	var x = {};
 	var wl = cached.whitelist_entity_types[t];
-console.log(wl);
+
+        if (et[t].type_format == 6)
+          val = app_url + "/api/blobstore/" + v.PK;
+
 	if (t == CONST_XML) {
 		value = v.ServiceEntityPropertiesTypeValue;
 	} else if (t == CONST_FIR_ID) {
