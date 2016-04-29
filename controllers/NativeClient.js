@@ -5,6 +5,7 @@ var Promise = require("bluebird");
 // DB: bookshelf
 var db = require('../db');
 var cached = require('../static');
+var db_user = require('../db/user');
 
 // main index
 var  o1t = db.Model.extend({ tableName: 'O1T'  });
@@ -27,28 +28,6 @@ var o1 = {
   7: o1a7, // bool
 };
 
-// main index
-var  u1t = db.Model.extend({ tableName: 'U1T'  }); // User list
-var  u2t = db.Model.extend({ tableName: 'U2T'  }); // UserProperty type definition
-var  u3t = db.Model.extend({ tableName: 'U3T'  }); // UserCategory definition
-var u2a1 = db.Model.extend({ tableName: 'U2A1' });
-var u2a2 = db.Model.extend({ tableName: 'U2A2' });
-var u2a3 = db.Model.extend({ tableName: 'U2A3' });
-var u2a4 = db.Model.extend({ tableName: 'U2A4' });
-var u2a5 = db.Model.extend({ tableName: 'U2A5' });
-var u2a6 = db.Model.extend({ tableName: 'U2A6' });
-var u2a7 = db.Model.extend({ tableName: 'U2A7' });
-
-var o1 = {
-  0: u1t,  // Master
-  1: u2a1, // null?
-  2: u2a2, // int
-  3: u2a3, // text
-  4: u2a4, // string
-  5: u2a5, // datetime
-  6: u2a6, // blob
-  7: u2a7, // bool
-};
 module.exports.getOrgNode = function (req, res, next) {
   var id = req.swagger.params.id.value;
   o1t.where('OrganizationID', req.swagger.params.id.value).fetch().then(function(result) {
@@ -102,29 +81,26 @@ module.exports.searchOrgNode = function (req, res, next) {
 
 module.exports.getUserNode = function (req, res, next) {
   var id = req.swagger.params.id.value;
-  u1t.where('UserID', req.swagger.params.id.value).fetch().then(function(result) {
+  db_user.u1t.where('UserID', req.swagger.params.id.value).fetch().then(function(result) {
     if (!result) {
       res.statusCode = 404;
       return res.end();
     }
     var attributes = result.attributes;
 
-    var _u2t = u2t.fetchAll(); // TODO cache, but as its not called often, don't care
-    var _u3t = u3t.fetchAll();
-    var u1 = u2a1.where('UserID', req.swagger.params.id.value).fetchAll();
-    var u2 = u2a2.where('UserID', req.swagger.params.id.value).fetchAll();
-    var u3 = u2a3.where('UserID', req.swagger.params.id.value).fetchAll();
-    var u4 = u2a4.where('UserID', req.swagger.params.id.value).fetchAll();
-    var u5 = u2a5.where('UserID', req.swagger.params.id.value).fetchAll();
-    var u6 = u2a6.where('UserID', req.swagger.params.id.value).fetchAll();
-    var u7 = u2a7.where('UserID', req.swagger.params.id.value).fetchAll();
+    var _u2t = db_user.u2t.fetchAll(); // TODO cache, but as its not called often, don't care
+    var _u3t = db_user.u3t.fetchAll();
 
-    Promise.join(_u2t, _u2t, u1, u2, u3, u4, u5, u6, u7, function(_u2t, _u3t, u1, u2, u3, u4, u5, u6, u7) {
-      var pts = {};
+    var p = [];
+    for (var i = 1; i<8; i++) {
+      p.push(db_user[i].where('UserID', req.swagger.params.id.value).fetchAll());
+    }
+
+    var pts = {};
+    Promise.join(_u2t, _u2t, function(_u2t, _u3t) {
       _u2t.toJSON().map(function(v) { pts[v.UserPropertiesTypeID] = {description: v.UserPropertiesTypeDescription, format: v.UserPropertiesTypeFormat, multiuse: v.multipleUse}});
-      
-      var result = [];
-      result = result.concat(u1.toJSON(), u2.toJSON(), u3.toJSON(), u4.toJSON(), u5.toJSON(), u6.toJSON(), u7.toJSON());
+    }).then(function(){Promise.all(p).then(function(r) {
+      var result = [].concat.apply([], r.map(function(x) {return x.toJSON()}));
       var merged = {};
       var value = undefined;
       var result = result.map(function(v) {
@@ -157,12 +133,12 @@ module.exports.getUserNode = function (req, res, next) {
       var result = {tags: merged, uid: attributes.UserID, username: attributes.Username, language: attributes.MainlanguagePref};
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify(result || {}, null, 2));
-    });
+    })});
   });
 };
 
 module.exports.searchUserNode = function (req, res, next) {
-  u1t.fetchAll().then(function(result) {
+  db_user.u1t.fetchAll().then(function(result) {
     var users = {};
     var result = result.toJSON().map(function(v) { users[v.UserID] = {uid: v.UserID, username:  v.Username, language: v.MainlanguagePref }});
 
@@ -173,15 +149,15 @@ module.exports.searchUserNode = function (req, res, next) {
 
 module.exports.getPermissionNode = function (req, res, next) {
   var id = req.swagger.params.id.value;
-  u1t.where('PermissionID', req.swagger.params.id.value).fetch().then(function(result) {
+  db_user.u1t.where('PermissionID', req.swagger.params.id.value).fetch().then(function(result) {
     if (!result) {
       res.statusCode = 404;
       return res.end();
     }
     var attributes = result.attributes;
 
-    var _u2t = u2t.fetchAll(); // TODO cache, but as its not called often, don't care
-    var _u3t = u3t.fetchAll();
+    var _u2t = db_user.u2t.fetchAll(); // TODO cache, but as its not called often, don't care
+    var _u3t = db_user.u3t.fetchAll();
     var u1 = u2a1.where('PermissionID', req.swagger.params.id.value).fetchAll();
     var u2 = u2a2.where('PermissionID', req.swagger.params.id.value).fetchAll();
     var u3 = u2a3.where('PermissionID', req.swagger.params.id.value).fetchAll();
@@ -233,7 +209,7 @@ module.exports.getPermissionNode = function (req, res, next) {
 };
 
 module.exports.searchPermissionNode = function (req, res, next) {
-  u1t.fetchAll().then(function(result) {
+  db_user.u1t.fetchAll().then(function(result) {
     var users = {};
     var result = result.toJSON().map(function(v) { users[v.PermissionID] = {uid: v.PermissionID, username:  v.Permissionname, language: v.MainlanguagePref }});
 

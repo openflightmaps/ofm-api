@@ -5,109 +5,66 @@ var Promise = require("bluebird");
 // DB: bookshelf
 var db = require('../db');
 var cached = require('../static');
+var db_node = require('../db/node');
 
-// main index
-var s4 = db.Model.extend({
-  tableName: 'S4',
-});
-
-var s3a1 = db.Model.extend({
-  tableName: 'S3A1',
-});
-
-var s3a2 = db.Model.extend({
-  tableName: 'S3A2'
-});
-
-var s3a3 = db.Model.extend({
-  tableName: 'S3A3'
-});
-
-var s3a4 = db.Model.extend({
-  tableName: 'S3A4'
-});
-
-var s3a5 = db.Model.extend({
-  tableName: 'S3A5'
-});
-
-var s3a6 = db.Model.extend({
-  tableName: 'S3A6'
-});
-
-var s3a7 = db.Model.extend({
-  tableName: 'S3A7'
-});
-
-var s3 = {
-  1: s3a1, // null?
-  2: s3a2, // int
-  3: s3a3, // text
-  4: s3a4, // string
-  5: s3a5, // datetime
-  6: s3a6, // blob
-  7: s3a7, // bool
-};
+var app_url = process.env.APP_URL || 'http://localhost:8080';
 
 var CONST_XML = 27;
 var CONST_BLOB = 2;
 var CONST_FIR_ID = 0;
 var CONST_OAD_DB = 3; // Public workspace
 
-/*
-module.exports.getNode = function getNode (req, res, next) {
-  s4.where('ServiceEntityID', req.swagger.params.id.value).where('ParentServiceID', CONST_OAD_DB ).fetch().then(function(result) {
-    if (!result) {
-      res.statusCode = 404;
-      return res.end();
-    }
-
-    s3a3.where('ServiceEntityID', req.swagger.params.id.value).where('ServiceEntityPropertiesTypeId', CONST_XML).fetch().then(function(result) {
-      if (!result) {
-        return next("nodatafound");
-      }
-
-      res.setHeader('Content-Type', 'application/xml');
-      res.end(result.attributes.ServiceEntityPropertiesTypeValue);
-    });
-  });
-};
-*/
-
 module.exports.getNode = function (req, res, next) {
   var id = req.swagger.params.id.value;
-  s4.where('ServiceEntityID', id).where('ParentServiceID', CONST_OAD_DB ).fetch().then(function(result) {
-    var attributes = result.attributes;
+  //db_node[0].where('ServiceEntityID', id).where('ParentServiceID', CONST_OAD_DB ).fetch().then(function(result) {
+  db_node[0].where('ServiceEntityID', id).fetch().then(function(result) {
     if (!result) {
       res.statusCode = 404;
       return res.end();
     }
+    var attributes = result.attributes;
 
-    var a1 = s3a1.where('ServiceEntityID', req.swagger.params.id.value).fetchAll({columns: ["ServiceEntityPropertiesTypeID", "ServiceEntityPropertiesTypeValue"]});
-    var a2 = s3a2.where('ServiceEntityID', req.swagger.params.id.value).fetchAll({columns: ["ServiceEntityPropertiesTypeID", "ServiceEntityPropertiesTypeValue"]});
-    var a3 = s3a3.where('ServiceEntityID', req.swagger.params.id.value).fetchAll({columns: ["ServiceEntityPropertiesTypeID", "ServiceEntityPropertiesTypeValue"]});
-    var a4 = s3a4.where('ServiceEntityID', req.swagger.params.id.value).fetchAll({columns: ["ServiceEntityPropertiesTypeID", "ServiceEntityPropertiesTypeValue"]});
-    var a5 = s3a5.where('ServiceEntityID', req.swagger.params.id.value).fetchAll({columns: ["ServiceEntityPropertiesTypeID", "ServiceEntityPropertiesTypeValue"]});
-    var a6 = s3a6.where('ServiceEntityID', req.swagger.params.id.value).fetchAll({columns: ["ServiceEntityPropertiesTypeID", "ServiceEntityPropertiesTypeValue"]});
-    var a7 = s3a7.where('ServiceEntityID', req.swagger.params.id.value).fetchAll({columns: ["ServiceEntityPropertiesTypeID", "ServiceEntityPropertiesTypeValue"]});
+    var p = [];
+    for (var i = 1; i<8; i++) {
+      var columns = ["PK", "ServiceEntityPropertiesTypeID"];
+      if (i<7)
+        columns.push("ServiceEntityPropertiesTypeValue");
+      p.push(db_node[i].where('ServiceEntityID', req.swagger.params.id.value).fetchAll({columns: columns}));
+    }      
 
-    Promise.join(a1, a2, a3, a4, a5, a6, a7, function(a1, a2, a3, a4, a5, a6, a7) {
-      var result = [];
-      result = result.concat(a1.toJSON(), a2.toJSON(), a3.toJSON(), a4.toJSON(), a5.toJSON(), a6.toJSON(), a7.toJSON());
+    Promise.all(p).then(function(r) {
+      var result = [].concat.apply([], r.map(function(x) {return x.toJSON()}));
       var merged = {};
       var value = undefined;
       var et = cached.entity_types.value();
       var result = result.map(function(v) {
+        var t = v.ServiceEntityPropertiesTypeID;
+	var field;
+        var val =  v.ServiceEntityPropertiesTypeValue;
+        if (val instanceof Buffer)
+          val = app_url + "/api/blobstore/" + v.PK;
+
 	var x = {};
-	var wl = cached.whitelist_entity_types[v.ServiceEntityPropertiesTypeID];
-	if (v.ServiceEntityPropertiesTypeID == CONST_XML)
+	var wl = cached.whitelist_entity_types[t];
+console.log(wl);
+	if (t == CONST_XML) {
 		value = v.ServiceEntityPropertiesTypeValue;
-	else if (v.ServiceEntityPropertiesTypeID == CONST_FIR_ID)
-		merged[wl.name] = cached.regions.value().by_id[v.ServiceEntityPropertiesTypeValue]
-	else if (wl && wl.name)
-		merged[wl.name] = v.ServiceEntityPropertiesTypeValue
-	else if (wl)
-		merged["XXX_REMOVED_" + et[v.ServiceEntityPropertiesTypeID].description] = v.ServiceEntityPropertiesTypeValue;
+	} else if (t == CONST_FIR_ID) {
+		field = wl.name;
+		val = cached.regions.value().by_id[t].id;
+	} else if (wl && wl.name) {
+		field = wl.name;
+	} else if (wl) {
+		field = "XXX_REMOVED_" + et[t].description;
+	}
+
+	if (field) {
+		if (merged[field] != undefined)
+		  merged[field] = "TODO: DUPLICATES"; // list of object  types with duplicate values needed
+		else
+		  merged[field] = val;
+	};
+
 	return x;
       });
       var result = {tags: merged, node_id: id, revision: attributes.Revision, deleted: attributes.deleted == 1 ? true : false, timestamp:  attributes.dateOfCreation, user_id: attributes.UserID > 0 ? attributes.UserID : null, value: value};
@@ -120,13 +77,13 @@ module.exports.getNode = function (req, res, next) {
 module.exports.putNode = function putNode (req, res, next) {
   var id = req.swagger.params.id.value;
   var body = req.swagger.body;
-  s4.where('ServiceEntityID', req.swagger.params.id.value).where('ParentServiceID', CONST_OAD_DB ).fetch().then(function(result) {
+  db_node[0].where('ServiceEntityID', req.swagger.params.id.value).where('ParentServiceID', CONST_OAD_DB ).fetch().then(function(result) {
     if (!result) {
       res.statusCode = 404;
       return res.end();
     }
 
-    s3a3.where('ServiceEntityID', req.swagger.params.id.value).where('ServiceEntityPropertiesTypeId', CONST_XML).fetch().then(function(result) {
+    db_node[3].where('ServiceEntityID', req.swagger.params.id.value).where('ServiceEntityPropertiesTypeId', CONST_XML).fetch().then(function(result) {
       if (!result) {
         return next("nodatafound");
       }
@@ -143,7 +100,7 @@ module.exports.searchNode = function getNode (req, res, next) {
     return next("invalid region");
   }
   var region_id = region.region_id;
-  var q = s4.where('ammnt_FirId', region_id);
+  var q = db_node[0].where('ammnt_FirId', region_id);
   if (!deleted)
     q = q.where('deleted', false);
 

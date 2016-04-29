@@ -57,16 +57,16 @@ module.exports.regions = new Promise(function(resolve, reject) {
 });
 
 module.exports.whitelist_entity_types =
-{ '0': { description: 'Flight Information Region', type_format: 2, name: 'fir' },
+{ '0': { description: 'Flight Information Region', type_format: 2, name: 'region' },
   '1': { description: 'Last Pending Submission', type_format: 5 },
   '2': { description: 'Data Entity', type_format: 6 },
-//  '3': { description: 'PDF Attachment', type_format: 6 },
-//  '4': { description: 'Executable File Client', type_format: 6 },
-//  '5': { description: 'Executable File Updater', type_format: 6 },
+  '3': { description: 'PDF Attachment', type_format: 6 },
+  '4': { description: 'Executable File Client', type_format: 6, name: 'exe_client' },
+  '5': { description: 'Executable File Updater', type_format: 6, name: 'exe_updater' },
   '6': { description: 'Version', type_format: 2 },
   '7': { description: 'Effective', type_format: 5 },
   '8': { description: 'valid', type_format: 5 },
-  '9': { description: 'Built', type_format: 2 },
+  '9': { description: 'Built', type_format: 2, name: 'build' },
   '10': { description: 'Comment File', type_format: 6 },
   '11': { description: 'User', type_format: 3 },
   '12': { description: 'Designator', type_format: 3, name: 'name' },
@@ -84,19 +84,32 @@ module.exports.whitelist_entity_types =
   '24': { description: 'CurrentVersion', type_format: 7 },
   '25': { description: 'locked', type_format: 2, name: 'locked' },
   '26': { description: 'Page Nbr', type_format: 2, name: 'page_nr' },
-//  '27': { description: 'xml', type_format: 3 },
-//  '28': { description: 'rtf', type_format: 3 },
+  '27': { description: 'xml', type_format: 3 },
+  '28': { description: 'rtf', type_format: 3 },
   '29': { description: 'geoReferencedImage', type_format: 6 },
   '30': { description: 'geoReferenceMapping', type_format: 3 },
   '31': { description: 'typeOfDocument_0pdf_1gri', type_format: 2 },
-  '32': { description: 'binary', type_format: 6 },
+  '32': { description: 'binary', type_format: 6, name: 'binary' },
   '33': { description: 'file storage location', type_format: 3 },
   '34': { description: 'geo frame', type_format: 3 },
   '35': { description: 'sectionFrameXml', type_format: 3 },
   '36': { description: 'lastCommitMsg', type_format: 3 },
-  '37': { description: 'Executable File Client x64', type_format: 6 },
-  '38': { description: 'Executable File Client Beta', type_format: 6 },
-  '39': { description: 'Executable File Client Beta x64', type_format: 6 },
-  '40': { description: 'Built Beta', type_format: 2 },
-  '41': { description: 'beta tester msg', type_format: 3 } }
+  '37': { description: 'Executable File Client x64', type_format: 6, name: 'exe_client64' },
+  '38': { description: 'Executable File Client Beta', type_format: 6, name: 'exe_client_beta' },
+  '39': { description: 'Executable File Client Beta x64', type_format: 6, name: 'exe_client64_beta' },
+  '40': { description: 'Built Beta', type_format: 2, name: 'build_beta' },
+  '41': { description: 'beta tester msg', type_format: 3, name: 'msg_beta_tester' }
+ }
 
+var services =
+{ '1': { description: 'ION originative suite' },//blobs: update files
+  '2': { description: 'OAD Private Workspace' },
+  '3': { description: 'OAD Pending Changes' }, // value: xml
+  '4': { description: 'OAD Static Data' },     // value: dataentity
+  '5': { description: 'Documents Libary' },    // blob: pdf or geoReferencedImage
+  '6': { description: 'AIS map design' },      // blob: binary (aisMapDesignSet xml file)
+  '7': { description: 'CFE definition file' }, // blob: binary (ofm_CommmonFormatExport xml file) named VFR Design Set???
+  '8': { description: 'Map Regions' } }        // value: sectionFrameXml ?
+
+
+// bugs: record 416 3181 3216 3217
