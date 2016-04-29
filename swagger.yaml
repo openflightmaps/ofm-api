@@ -423,7 +423,45 @@ paths:
           description: OK
       summary: Search
       tags: ["NativeClient"]
-
+  /blobstore/{id}:
+    get:
+      x-swagger-router-controller: BlobStore
+      operationId: getBlob
+      description: ''
+      produces:
+        - application/octet-stream
+      parameters:
+        - description: Unique blob identifier
+          in: path
+          name: id
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          headers: {}
+      summary: Get Blob
+      tags: ["NativeClient"]
+  /blobstore/_create:
+    put:
+      x-swagger-router-controller: BlobStore
+      operationId: createBlob
+      description: ''
+      consumes:
+        - application/octet-stream
+      parameters:
+        - description: Binary data
+          name: body
+          required: true
+          in: body
+          schema:
+            type: string
+            format: byte
+      responses:
+        '200':
+          description: OK
+      summary: Create new blob
+      tags: ["NativeClient"]
 definitions:
   Node:
     type: object
