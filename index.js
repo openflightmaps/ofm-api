@@ -1,5 +1,5 @@
 'use strict';
-
+require('dotenv').config();
 var app = require('connect')();
 var http = require('http');
 var swaggerTools = require('swagger-tools');

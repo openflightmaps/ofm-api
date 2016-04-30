@@ -12,6 +12,7 @@
     "bluebird": "^3.3.5",
     "bookshelf": "^0.9.4",
     "connect": "^3.4.1",
+    "dotenv": "^2.0.0",
     "js-yaml": "^3.3.0",
     "knex": "^0.10.0",
     "mysql": "^2.10.2",
