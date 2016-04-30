@@ -32,7 +32,7 @@ module.exports.entity_types = new Promise(function(resolve, reject) {
   });
 });
 
-module.exports.services = new Promise(function(resolve, reject) {
+module.exports.services_db = new Promise(function(resolve, reject) {
   s1.then(function(s1) {
     var services = {};
     s1.toJSON().map(function(obj) {services[obj.ServiceID] = {description: obj.ServiceName}});
@@ -101,16 +101,16 @@ module.exports.whitelist_entity_types =
   '41': { description: 'beta tester msg', type_format: 3, name: 'msg_beta_tester' }
  }
 
-var services =
-{ '1': { description: 'ION originative suite', name: 'ion' },// 	blobs: update files
-  '2': { description: 'OAD Private Workspace', name: 'oad_private' },
-  '3': { description: 'OAD Pending Changes' , name: 'oad' }, // value: xml
-  '4': { description: 'OAD Static Data', name: 'oad_static' },     // value: dataentity
-  '5': { description: 'Documents Libary', name: 'documents' },    // blob: pdf or geoReferencedImage
-  '6': { description: 'AIS map design', name: 'map_design' },      // blob: binary (aisMapDesignSet xml file)
-  '7': { description: 'CFE definition file', name: 'cfe' }, // blob: binary (ofm_CommmonFormatExport xml file) named VFR Design Set???
-  '8': { description: 'Map Regions', name: 'map_regions' }
-}        // value: sectionFrameXml ?
-
+module.exports.dbs =
+{
+  'ion': { id: 1, description: 'ION originative suite', name: 'ion' }, // blobs: update files
+  'oad_private': { id: 2, description: 'OAD Private Workspace', name: 'oad_private' },
+  'oad': { id: 3, description: 'OAD Pending Changes' , name: 'oad' }, // value: xml
+  'oad_static': { id: 4, description: 'OAD Static Data', name: 'oad_static' },     // value: dataentity
+  'documents': { id: 5, description: 'Documents Libary', name: 'documents' },    // blob: pdf or geoReferencedImage
+  'map_design': { id: 6, description: 'AIS map design', name: 'map_design' },      // blob: binary (aisMapDesignSet xml file)
+  'cfe': { id: 7, description: 'CFE definition file', name: 'cfe' }, // blob: binary (ofm_CommmonFormatExport xml file) named VFR Design Set???
+  'map_regions': { id: 8, description: 'Map Regions', name: 'map_regions' }
+}
 
 // bugs: record 416 3181 3216 3217

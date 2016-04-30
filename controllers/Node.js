@@ -4,7 +4,7 @@ var Promise = require("bluebird");
 
 // DB: bookshelf
 var db = require('../db');
-var cached = require('../static');
+var static_data = require('../static');
 var db_node = require('../db/node');
 
 var app_url = process.env.APP_URL || 'http://localhost:8080';
@@ -16,9 +16,10 @@ var CONST_OAD_DB = 3; // Public workspace
 
 module.exports.getNode = function (req, res, next) {
   var id = req.swagger.params.id.value;
-  //db_node[0].where('ServiceEntityID', id).where('ParentServiceID', CONST_OAD_DB ).fetch().then(function(result) {
-  db_node[0].where('ServiceEntityID', id).fetch().then(function(result) {
-    if (!result) {
+  var db = req.swagger.params.db.value;
+  var db_id = static_data.services[db];
+  db_node[0].where('ServiceEntityID', id).where('ParentServiceID', db_id ).fetch().then(function(result) {
+  if (!result) {
       res.statusCode = 404;
       return res.end();
     }
@@ -36,14 +37,14 @@ module.exports.getNode = function (req, res, next) {
       var result = [].concat.apply([], r.map(function(x) {return x.toJSON()}));
       var merged = {};
       var value = undefined;
-      var et = cached.entity_types.value();
+      var et = static_data.entity_types.value();
       var result = result.map(function(v) {
         var t = v.ServiceEntityPropertiesTypeID;
 	var field;
         var val =  v.ServiceEntityPropertiesTypeValue;
 
 	var x = {};
-	var wl = cached.whitelist_entity_types[t];
+	var wl = static_data.whitelist_entity_types[t];
 
         if (et[t].type_format == 6)
           val = app_url + "/api/blobstore/" + v.PK;
@@ -52,7 +53,7 @@ module.exports.getNode = function (req, res, next) {
 		value = v.ServiceEntityPropertiesTypeValue;
 	} else if (t == CONST_FIR_ID) {
 		field = wl.name;
-		val = cached.regions.value().by_id[t].id;
+		val = static_data.regions.value().by_id[t].id;
 	} else if (wl && wl.name) {
 		field = wl.name;
 	} else if (wl) {
@@ -96,7 +97,7 @@ module.exports.putNode = function putNode (req, res, next) {
 };
 module.exports.searchNode = function getNode (req, res, next) {
   var deleted = req.swagger.params.deleted.value;
-  var region = cached.regions.value().by_name[req.swagger.params.region.value];
+  var region = static_data.regions.value().by_name[req.swagger.params.region.value];
   if (!region) {
     return next("invalid region");
   }
