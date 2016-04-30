@@ -28,12 +28,17 @@ paths:
             $ref: '#/definitions/Regions'
       summary: List all Regions
       tags: ["Information"]   
-  /changeset/_create:
+  /changeset/{db}/_create:
     put:
       x-swagger-router-controller: Changeset
       operationId: createChangeset
       description: ''
-      parameters: []
+      parameters:
+        - description: Database name (e.g. oad)
+          name: db
+          required: true
+          in: path
+          type: string
       responses:
         '200':
           description: OK
@@ -41,12 +46,17 @@ paths:
           headers: {}
       summary: Create new changeset
       tags: ["NotImplementedYet"]
-  /changeset/{id}:
+  /changeset/{db}/{id}:
     get:
       x-swagger-router-controller: Changeset
       operationId: getChangeset
       description: ''
       parameters:
+        - description: Database name (e.g. oad)
+          name: db
+          required: true
+          in: path
+          type: string
         - description: Unique changeset identifier
           in: path
           name: id
@@ -59,12 +69,17 @@ paths:
           headers: {}
       summary: Download all changes associated with this changeset
       tags: ["NotImplementedYet"]
-  /changeset/{id}/_close:
+  /changeset/{db}/{id}/_close:
     put:
       x-swagger-router-controller: Changeset
       operationId: closeChangeset
       description: ''
       parameters:
+        - description: Database name (e.g. oad)
+          name: db
+          required: true
+          in: path
+          type: string
         - description: Unique changeset identifier
           in: path
           name: id
@@ -77,12 +92,17 @@ paths:
           headers: {}
       summary: Close changeset
       tags: ["NotImplementedYet"]
-  /changeset/{id}/_expand_bbox:
+  /changeset/{db}/{id}/_expand_bbox:
     post:
       x-swagger-router-controller: Changeset
       operationId: expandChangesetBbox
       description: ''
       parameters:
+        - description: Database name (e.g. oad)
+          name: db
+          required: true
+          in: path
+          type: string
         - description: Unique changeset identifier
           in: path
           name: id
@@ -95,12 +115,17 @@ paths:
           headers: {}
       summary: Expand bounding box of change
       tags: ["NotImplementedYet"]
-  /node/_create:
+  /node/{db}/_create:
     put:
       x-swagger-router-controller: Node
       operationId: createNode
       description: ''
       parameters:
+        - description: Database name (e.g. oad)
+          name: db
+          required: true
+          in: path
+          type: string
         - description: Node definition
           name: body
           required: true
@@ -114,13 +139,18 @@ paths:
           headers: {}
       summary: Create new node
       tags: ["Nodes"]
-  /node/_search:
+  /node/{db}/_search:
     post:
       x-swagger-router-controller: Node
       operationId: searchNode
       description: |
         Search for objects in openflightmaps database.
       parameters:
+        - description: Database name (e.g. oad)
+          name: db
+          required: true
+          in: path
+          type: string
         - description: Region identifier (e.g. FIR)
           in: query
           name: region
@@ -141,14 +171,18 @@ paths:
                 - '1'
                 - '2'
                 - '3'
-          headers: {}
       summary: Search
       tags: ["Nodes"]
-  /node/{id}:
+  /node/{db}/{id}:
     delete:
       x-swagger-router-controller: Node
       operationId: deleteNode
       parameters:
+        - description: Database name (e.g. oad)
+          name: db
+          required: true
+          in: path
+          type: string
         - description: Unique node identifier
           in: path
           name: id
@@ -168,6 +202,11 @@ paths:
       operationId: getNode
       description: ''
       parameters:
+        - description: Database name (e.g. oad)
+          name: db
+          required: true
+          in: path
+          type: string
         - description: Unique node identifier
           in: path
           name: id
@@ -200,6 +239,11 @@ paths:
       operationId: putNode
       description: ''
       parameters:
+        - description: Database name (e.g. oad)
+          name: db
+          required: true
+          in: path
+          type: string
         - description: Unique changeset identifier
           in: path
           name: id
@@ -218,11 +262,16 @@ paths:
           headers: {}
       summary: Replace node with new node
       tags: ["Nodes"]
-  /node/{id}/_history:
+  /node/{db}/{id}/_history:
     get:
       x-swagger-router-controller: Node
       operationId: getNodeHistory
       parameters:
+        - description: Database name (e.g. oad)
+          name: db
+          required: true
+          in: path
+          type: string
         - description: Unique node identifier
           in: path
           name: id
@@ -235,11 +284,16 @@ paths:
           headers: {}
       summary: Get node history
       tags: ["Nodes", "NotImplementedYet"]
-  /node/{id}/{revision}:
+  /node/{db}/{id}/{revision}:
     get:
       x-swagger-router-controller: Node
       operationId: getNodebyRevision
       parameters:
+        - description: Database name (e.g. oad)
+          name: db
+          required: true
+          in: path
+          type: string
         - description: Unique node identifier
           in: path
           name: id
