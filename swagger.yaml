@@ -151,11 +151,12 @@ paths:
           required: true
           in: path
           type: string
-        - description: Region identifier (e.g. FIR)
-          in: query
-          name: region
+        - description: "Query with name value pairs. e.g. {region: 'LSAS', type: 'Ase/Abd'"
+          in: body
+          name: query
           required: true
-          type: string
+          schema:
+            $ref: '#/definitions/NodeQuery'
         - description: return deleted nodes
           in: query
           name: deleted
@@ -551,6 +552,10 @@ definitions:
     items:
       $ref: '#/definitions/Region' 
   Region:
+    type: object
+    additionalProperties:
+      type: string
+  NodeQuery:
     type: object
     additionalProperties:
       type: string
