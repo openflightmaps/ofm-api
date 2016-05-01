@@ -17,7 +17,7 @@ var CONST_OAD_DB = 3; // Public workspace
 module.exports.getNode = function (req, res, next) {
   var id = req.swagger.params.id.value;
   var db = req.swagger.params.db.value;
-  var db_id = static_data.services[db];
+  var db_id = static_data.dbs[db].id;
   db_node[0].where('ServiceEntityID', id).where('ParentServiceID', db_id ).fetch().then(function(result) {
   if (!result) {
       res.statusCode = 404;
@@ -96,15 +96,16 @@ module.exports.putNode = function putNode (req, res, next) {
   });
 };
 module.exports.searchNode = function getNode (req, res, next) {
+  var db = req.swagger.params.db.value;
+  var db_id = static_data.dbs[db].id;
+
   var deleted = req.swagger.params.deleted.value;
-  var region = static_data.regions.value().by_name[req.swagger.params.region.value];
-  if (!region) {
-    return next("invalid region");
-  }
-  var region_id = region.region_id;
-  var q = db_node[0].where('ammnt_FirId', region_id);
+  var query = req.swagger.params.query.value;
+
+  var q = db_node[0].where('ParentServiceID', db_id );
+
   if (!deleted)
-    q = q.where('deleted', false);
+    q = q.where('deleted', '<>', true);
 
   q.fetchAll({columns: ["ServiceEntityID"]}).then(function(result) {
     var result = result.toJSON().map(function(v) { return v.ServiceEntityID });
