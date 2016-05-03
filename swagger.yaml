@@ -146,7 +146,7 @@ paths:
       description: |
         Search for objects in openflightmaps database.
       parameters:
-        - description: Database name (e.g. oad)
+        - description: Database name (e.g. "OAD Pending Changes")
           name: db
           required: true
           in: path

@@ -42,11 +42,16 @@ module.exports.up_types = new Promise(function(resolve, reject) {
   });
 });
 
-module.exports.services_db = new Promise(function(resolve, reject) {
+module.exports.service_dbs = new Promise(function(resolve, reject) {
   s1.then(function(s1) {
-    var services = {};
-    s1.map(function(obj) {services[obj.ServiceID] = {description: obj.ServiceName}});
-    resolve(services);
+    var by_id = {};
+    var by_name = {};
+    s1.map(function(obj) {
+        var sv_type = {id: obj.ServiceID, description: obj.ServiceName};
+        by_id[obj.ServiceID] = sv_type;
+        by_name[obj.ServiceName] = sv_type;
+    });
+    resolve({by_name: by_name, by_id: by_id});
   });
 });
 

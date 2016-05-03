@@ -12,7 +12,7 @@ var app_url = process.env.APP_URL || 'http://localhost:8080';
 module.exports.getNode = function (req, res, next) {
   var id = req.swagger.params.id.value;
   var db = req.swagger.params.db.value;
-  var db_id = static_data.dbs[db].id;
+  var db_id = static_data.service_dbs.value().by_name[db].id;
   db_node(0).where('ServiceEntityID', id).where('ParentServiceID', db_id ).select().then(function(result) {
   if (!result || result.length == 0) {
       res.statusCode = 404;
@@ -78,7 +78,7 @@ module.exports.getNode = function (req, res, next) {
 
 module.exports.searchNode = function getNode (req, res, next) {
   var db = req.swagger.params.db.value;
-  var db_id = static_data.dbs[db].id;
+  var db_id = static_data.service_dbs.value().by_name[db].id;
 
   var query = req.swagger.params.query.value;
   var deleted = req.swagger.params.deleted.value;
