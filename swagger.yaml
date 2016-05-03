@@ -1,5 +1,5 @@
 swagger: '2.0'
-basePath: /api
+basePath: /0.1
 info:
   description: >+
     Open flightmap data api.
@@ -550,7 +550,7 @@ definitions:
   Regions:
     type: array
     items:
-      $ref: '#/definitions/Region' 
+      $ref: '#/definitions/Region'
   Region:
     type: object
     additionalProperties:
@@ -559,3 +559,4 @@ definitions:
     type: object
     additionalProperties:
       type: string
+    example: {"Flight Information Region": "5", "Type": "Ase/Abd"}
