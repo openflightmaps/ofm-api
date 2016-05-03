@@ -17,7 +17,7 @@ module.exports.getRegions = function(req, res, next) {
     }
     var regions = {};
     result.map(function(v) {
-      regions[v.IcaoCode] = {name: v.Name};
+      regions[v.IcaoCode] = {name: v.Name, id: v.PK};
     });
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(regions || {}, null, 2));

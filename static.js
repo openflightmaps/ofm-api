@@ -18,9 +18,27 @@ var regions = db_regions.select();
 
 module.exports.entity_types = new Promise(function(resolve, reject) {
   s3.then(function(s3) {
-    var entity_types = {};
-    s3.map(function(obj) {entity_types[obj.ServiceEntityTypeID] = {description: obj.ServiceEntityTypeDescription, type_format: obj.ServiceEntityTypeFormat}});
-    resolve(entity_types);
+    var entity_types_by_id = {};
+    var entity_types_by_name = {};
+    s3.map(function(obj) {
+        var entity_type = {id: obj.ServiceEntityTypeID, name: obj.ServiceEntityTypeDescription, description: obj.ServiceEntityTypeDescription, type_format: obj.ServiceEntityTypeFormat};
+        entity_types_by_id[obj.ServiceEntityTypeID] = entity_type;
+        entity_types_by_name[obj.ServiceEntityTypeDescription] = entity_type;
+    });
+    resolve({by_name: entity_types_by_name, by_id: entity_types_by_id});
+  });
+});
+
+module.exports.up_types = new Promise(function(resolve, reject) {
+  db('U2T').then(function(s3) {
+    var by_id = {};
+    var by_name = {};
+    s3.map(function(obj) {
+        var up_type = {id: obj.UserPropertiesTypeID, name: obj.UserPropertiesTypeDescription, description: obj.UserPropertiesTypeDescription, type_format: obj.UserPropertiesTypeFormat};
+        by_id[obj.UserPropertiesTypeID] = up_type;
+        by_name[obj.UserPropertiesTypeDescription] = up_type;
+    });
+    resolve({by_name: by_name, by_id: by_id});
   });
 });
 
@@ -48,11 +66,11 @@ module.exports.regions = new Promise(function(resolve, reject) {
 });
 
 module.exports.whitelist_entity_types =
-{ '0': { description: 'Flight Information Region', type_format: 2, name: 'region' },
-  '1': { description: 'Last Pending Submission', type_format: 5, name: '' },
-  '2': { description: 'Data Entity', type_format: 6, name: 'entity' },
-  '3': { description: 'PDF Attachment', type_format: 6, name: 'pdf' },
-  '4': { description: 'Executable File Client', type_format: 6, name: 'exe_client' },
+{ 'region': {id: 0, description: 'Flight Information Region', type_format: 2, name: 'region' },
+  'last_pending_submission': {id: 1, description: 'Last Pending Submission', type_format: 5, name: '' },
+  'entity': {id: 2, description: 'Data Entity', type_format: 6, name: 'entity' },
+  'pdf_attachment': {id: 3, description: 'PDF Attachment', type_format: 6, name: 'pdf' },
+  'exe_client': {id: 4, description: 'Executable File Client', type_format: 6, name: 'exe_client' },
   '5': { description: 'Executable File Updater', type_format: 6, name: 'exe_updater' },
   '6': { description: 'Version', type_format: 2, name: 'version' },
   '7': { description: 'Effective', type_format: 5, name: 'effective' },

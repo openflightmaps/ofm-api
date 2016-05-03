@@ -9,11 +9,6 @@ var db_node = require('../db/node');
 
 var app_url = process.env.APP_URL || 'http://localhost:8080';
 
-var CONST_XML = 27;
-var CONST_BLOB = 2;
-var CONST_FIR_ID = 0;
-var CONST_OAD_DB = 3; // Public workspace
-
 module.exports.getNode = function (req, res, next) {
   var id = req.swagger.params.id.value;
   var db = req.swagger.params.db.value;
@@ -23,7 +18,6 @@ module.exports.getNode = function (req, res, next) {
       res.statusCode = 404;
       return res.end();
     }
-	console.log(result);
     var attributes = result;
 
     var p = [];
@@ -45,54 +39,39 @@ module.exports.getNode = function (req, res, next) {
         var val =  v.ServiceEntityPropertiesTypeValue;
 
 	var x = {};
-	var wl = static_data.whitelist_entity_types[t];
+	var wl = et.by_id[t];
 
-    if (et[t].type_format == 6)
-        val = app_url + "/api/blobstore/" + v.PK;
+        if (et.by_id[t].type_format == 6)
+            val = app_url + "/api/blobstore/" + v.PK;
 
-	if (t == CONST_XML) {
-		value = v.ServiceEntityPropertiesTypeValue;
-	} else if (t == CONST_FIR_ID) {
-		field = wl.name;
-		val = static_data.regions.value().by_id[t].id;
-	} else if (wl && wl.name) {
+	//if (t == CONST_FIR_ID) {
+	//	field = wl.name;
+	//	val = static_data.regions.value().by_id[t].id;
+	//} else
+        if (wl && wl.name) {
 		field = wl.name;
 	} else if (wl) {
-		field = "XXX_REMOVED_" + et[t].description;
+		field = "XXX_SHORTNAME_MISSING_" + et.by_id[t].description;
 	}
 
 	if (field) {
-		if (merged[field] != undefined)
-		  merged[field] = "TODO: DUPLICATES"; // list of object  types with duplicate values needed
-		else
-		  merged[field] = val;
-	};
-
+          if (wl != undefined && wl.multiuse == 1) {
+            if (merged[field] != undefined)
+              merged[field].push(val);
+            else 
+	      merged[field] = [val];
+          } else {
+            if (merged[field] != undefined)
+              merged[field] = "MULTIUSE NOT ALLOWED!"; // ABORT!!!
+            else
+	      merged[field] = val;
+          };
+        }
 	return x;
       });
       var result = {tags: merged, node_id: id, revision: attributes.Revision, deleted: attributes.deleted == 1 ? true : false, timestamp:  attributes.dateOfCreation, user_id: attributes.UserID > 0 ? attributes.UserID : null, value: value};
       res.setHeader('Content-Type', 'application/json');
       res.end(JSON.stringify(result || {}, null, 2));
-    });
-  });
-};
-
-module.exports.putNode = function putNode (req, res, next) {
-  var id = req.swagger.params.id.value;
-  var body = req.swagger.body;
-  db_node(0).where('ServiceEntityID', req.swagger.params.id.value).where('ParentServiceID', CONST_OAD_DB ).fetch().then(function(result) {
-    if (!result) {
-      res.statusCode = 404;
-      return res.end();
-    }
-
-    db_node(3).where('ServiceEntityID', req.swagger.params.id.value).where('ServiceEntityPropertiesTypeId', CONST_XML).fetch().then(function(result) {
-      if (!result) {
-        return next("nodatafound");
-      }
-
-      res.setHeader('Content-Type', 'application/xml');
-      res.end(result.attributes.ServiceEntityPropertiesTypeValue);
     });
   });
 };
@@ -106,28 +85,27 @@ module.exports.searchNode = function getNode (req, res, next) {
 
   var q = db_node(0);
   var mt = 'S4';
+  var qi = 1;
 
   for (var qw in query) {
-    console.log(qw);
-    //q.where(function() {
-	  console.log("query add: " + qw);
-	  var ft = 'S3A3';
-	  
-	  var qf = 0;
-	  var qv = query[qw];
-	  q.join(ft, ft + '.ServiceEntityID', '=', mt + '.ServiceEntityID').as('q1');//.where(ft + '.ServiceEntityPropertiesTypeID', qf).where(ft + '.ServiceEntityPropertiesTypeValue', qv);
-    //});
+    var wlt = static_data.entity_types.value().by_name[qw];
+    var ft = 'S3A' + wlt.type_format;
+  
+    var qf = wlt.id;
+    var qv = query[qw];
+    var qin = 'q' + qi++;
+    q.join(ft + " as " + qin, qin + '.ServiceEntityID', '=', mt + '.ServiceEntityID').as(qin);
+    q.where(qin + '.ServiceEntityPropertiesTypeID', qf).where(qin + '.ServiceEntityPropertiesTypeValue', qv);
   };
-  console.log(q);
-/*
-  q = q.where('ParentServiceID', db_id );
+
+  q = q.where(mt + '.ParentServiceID', db_id );
 
   if (!deleted) {
     q = q.where(function() {
-		this.where('deleted', false).orWhereNull('deleted');
+		this.where(mt + '.deleted', false).orWhereNull(mt + '.deleted');
 	});
   };
-*/
+
   q.select(mt + ".ServiceEntityID").then(function(result) {
     var result = result.map(function(v) { return v.ServiceEntityID });
 
