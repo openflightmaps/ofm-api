@@ -4,6 +4,7 @@ var db_url = url.parse(process.env.DATABASE_URL || "mysql://root:root@localhost:
 var knex = require('knex')({
   client: db_url.protocol.substr(0, db_url.protocol.length - 1),
   connection: {
+	  debug: true,
     host     : db_url.host.substr(0, db_url.host.indexOf(':')),
     port     : db_url.host.substr(db_url.host.indexOf(':') + 1, db_url.host.length),
     user     : db_url.auth.substr(0, db_url.auth.indexOf(':')),
@@ -13,5 +14,5 @@ var knex = require('knex')({
   }
 });
 
-module.exports = require('bookshelf')(knex);
+module.exports = knex;
 

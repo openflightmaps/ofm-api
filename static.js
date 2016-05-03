@@ -2,32 +2,24 @@
 
 var Promise = require("bluebird");
 
-// DB: bookshelf
+// DB: knex
 var db = require('./db');
 
 // service table
-var s3t = db.Model.extend({
-  tableName: 'S3T',
-});
-
-var s1t = db.Model.extend({
-  tableName: 'S1T',
-});
+var s3t = db('S3T');
+var s1t = db('S1T');
 
 // FIRs
-var db_regions = db.Model.extend({
-  tableName: 'AMMNT_FIR',
-});
+var db_regions = db('AMMNT_FIR');
 
-
-var s3 = s3t.fetchAll();
-var s1 = s1t.fetchAll();
-var regions = db_regions.fetchAll();
+var s3 = s3t.select();
+var s1 = s1t.select();
+var regions = db_regions.select();
 
 module.exports.entity_types = new Promise(function(resolve, reject) {
   s3.then(function(s3) {
     var entity_types = {};
-    s3.toJSON().map(function(obj) {entity_types[obj.ServiceEntityTypeID] = {description: obj.ServiceEntityTypeDescription, type_format: obj.ServiceEntityTypeFormat}});
+    s3.map(function(obj) {entity_types[obj.ServiceEntityTypeID] = {description: obj.ServiceEntityTypeDescription, type_format: obj.ServiceEntityTypeFormat}});
     resolve(entity_types);
   });
 });
@@ -35,7 +27,7 @@ module.exports.entity_types = new Promise(function(resolve, reject) {
 module.exports.services_db = new Promise(function(resolve, reject) {
   s1.then(function(s1) {
     var services = {};
-    s1.toJSON().map(function(obj) {services[obj.ServiceID] = {description: obj.ServiceName}});
+    s1.map(function(obj) {services[obj.ServiceID] = {description: obj.ServiceName}});
     resolve(services);
   });
 });
@@ -46,7 +38,6 @@ module.exports.regions = new Promise(function(resolve, reject) {
       reject();
       return;
     }
-    var result = result.toJSON();
     var regions = {by_name:{}, by_id:{}};
     result.map(function(v) {
       regions.by_id[v.PK] = {id: v.IcaoCode, name: v.Name, region_id: v.PK};
