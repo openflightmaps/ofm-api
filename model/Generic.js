@@ -2,9 +2,6 @@
 
 var Promise = require("bluebird");
 
-// DB: knex
-var db = require('../db');
-
 function getNodes(db, nodes) {
   var config = this.config;
   var p = [];
