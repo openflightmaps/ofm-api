@@ -14,7 +14,8 @@ consumes:
   - application/json
 produces:
   - application/json
-
+security:
+  - BasicAuth: []
 paths:
   /info/regions:
     get:
@@ -190,7 +191,7 @@ paths:
           required: true
           in: path
           type: string
-        - description: Unique node identifiers (e.g. 12,15,17)
+        - description: Unique node identifiers
           in: query
           name: nodes
           required: true
@@ -609,3 +610,6 @@ definitions:
     additionalProperties:
       type: string
     example: {"Flight Information Region": "5", "Type": "Ase/Abd"}
+securityDefinitions:
+  BasicAuth:
+    type: basic
