@@ -4,7 +4,6 @@ var Promise = require("bluebird");
 
 // DB: knex
 var db = require('../db');
-var static_data = require('../static');
 
 function getNodes(db, nodes) {
   var config = this.config;
@@ -25,7 +24,7 @@ function getNodes(db, nodes) {
 function getNode(db, id) {
   var config = this.config;
   return new Promise(function(resolve, reject) {
-    var db_id = static_data.service_dbs.value().by_name[db].id;
+    var db_id = config.dbs.value().by_name[db].id;
     config.db(0).where(config.pk, id).where(config.parent, db_id ).select().then(function(result) {
       if (!result || result.length == 0) {
         reject({code: "notfound", message: "not found"});
@@ -44,7 +43,7 @@ function getNode(db, id) {
         var result = [].concat.apply([], r.map(function(x) {return x}));
         var merged = {};
         var value = undefined;
-        var et = static_data.entity_types.value();
+        var et = config.types.value();
         var result = result.map(function(v) {
           var t = v[config.id];
   	  var field;
@@ -56,10 +55,6 @@ function getNode(db, id) {
           if (et.by_id[t].type_format == 6)
             val = config.app_url + "/api/blobstore/" + v.PK;
 
-	  //if (t == CONST_FIR_ID) {
-	  //	field = wl.name;
-	  //	val = static_data.regions.value().by_id[t].id;
-	  //} else
           if (wl && wl.name) {
 		field = wl.name;
 	  } else if (wl) {
@@ -91,7 +86,7 @@ function getNode(db, id) {
 function searchNode (db, query, deleted, bbox) {
   var config = this.config;
   return new Promise(function(resolve, reject) {
-    var db_id = static_data.service_dbs.value().by_name[db].id;
+    var db_id = config.dbs.value().by_name[db].id;
     // todo bbox
 
     var q = config.db(0);
@@ -99,7 +94,7 @@ function searchNode (db, query, deleted, bbox) {
     var qi = 1;
 
     for (var qw in query) {
-      var wlt = static_data.entity_types.value().by_name[qw];
+      var wlt = config.types.value().by_name[qw];
       var ft = config.db(wlt.type_format)._single.table;
   
       var qf = wlt.id;
@@ -129,7 +124,16 @@ function searchNode (db, query, deleted, bbox) {
 };
 
 function Generic(config) {
-  this.config = config || {pk: "ServiceEntityID", parent: "ParentServiceID", id: "ServiceEntityPropertiesTypeID", value: "ServiceEntityPropertiesTypeValue" };
+  this.config = config || {
+    app_url: app_url,
+    pk: 'ServiceEntityID',
+    parent: "ParentServiceID",
+    id: "ServiceEntityPropertiesTypeID",
+    value: "ServiceEntityPropertiesTypeValue",
+    db: require('../db/node'),
+    dbs: static_data.service_dbs,
+    types: static_data.entity_types,
+  };
   this.getNode = getNode;
   this.getNodes = getNodes;
   this.searchNode = searchNode;
