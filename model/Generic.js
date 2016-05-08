@@ -95,12 +95,12 @@ function searchNode (db, query, deleted, bbox) {
     // todo bbox
 
     var q = config.db(0);
-    var mt = 'S4';
+    var mt = config.db(0)._single.table;
     var qi = 1;
 
     for (var qw in query) {
       var wlt = static_data.entity_types.value().by_name[qw];
-      var ft = 'S3A' + wlt.type_format;
+      var ft = config.db(wlt.type_format)._single.table;
   
       var qf = wlt.id;
       var qv = query[qw];
