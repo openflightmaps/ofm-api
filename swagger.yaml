@@ -163,6 +163,11 @@ paths:
           default: false
           required: false
           type: boolean
+        - description: bounding box (left,bottom,right,top)
+          in: query
+          name: bbox
+          required: false
+          type: string
       responses:
         '200':
           description: OK
@@ -173,6 +178,46 @@ paths:
                 - '2'
                 - '3'
       summary: Search
+      tags: ["Nodes"]
+  /node/{db}:
+    get:
+      x-swagger-router-controller: Node
+      operationId: getNodes
+      description: ''
+      parameters:
+        - description: Database name (e.g. oad)
+          name: db
+          required: true
+          in: path
+          type: string
+        - description: Unique node identifiers
+          in: query
+          name: nodes
+          required: true
+          type: string
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Nodes'
+          examples:
+            application/json: |-
+              [
+                {
+                 "node_id": "555",
+                 "revision": 16,
+                 "deleted": false,
+                 "timestamp": "2015-11-16T15:07:56.000Z",
+                 "user_id": null,
+                 "tags": {
+                   "fir": 5,
+                   "name": "LSMP 5 TMA",
+                   "type": "Ase/Abd"
+                 }
+                }
+              ]
+          headers: {}
+      summary: Get multiple node data
       tags: ["Nodes"]
   /node/{db}/{id}:
     delete:
@@ -518,6 +563,10 @@ paths:
       summary: Create new blob
       tags: ["NativeClient"]
 definitions:
+  Nodes:
+    type: array
+    items:
+      $ref: '#/definitions/Node'
   Node:
     type: object
     required:
