@@ -29,6 +29,16 @@ paths:
             $ref: '#/definitions/Regions'
       summary: List all Regions
       tags: ["Information"]   
+  /info/userinfo:
+    get:
+      x-swagger-router-controller: Information
+      operationId: getUserInfo
+      description: 'Returns infor about the currently logged in user'
+      responses:
+        '200':
+          description: OK
+      summary: Show user information
+      tags: ["Information"]
   /changeset/{db}/_create:
     put:
       x-swagger-router-controller: Changeset
