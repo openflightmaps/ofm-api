@@ -7,6 +7,54 @@ var db = require('../db');
 var static_data = require('../static');
 var db_user = require('../db/user');
 var db_org = require('../db/org');
+var User = require('../model/User');
+var Org = require('../model/Org');
+var Permission = require('../model/Permission');
+
+module.exports.getUserNode2 = function (req, res, next) {
+  var id = req.swagger.params.id.value;
+
+  var user = new User();
+  user.load(undefined, id)
+  .then(function(result) {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(result || {}, null, 2));
+  })
+  .catch(function(error) {
+    res.statusCode = 500;
+    return res.end(error.message);
+  });
+};
+
+module.exports.getUserPermissionNode2 = function (req, res, next) {
+  var id = req.swagger.params.id.value;
+
+  var perm = new Permission();
+  perm.load(undefined, id)
+  .then(function(result) {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(result || {}, null, 2));
+  })
+  .catch(function(error) {
+    res.statusCode = 500;
+    return res.end(error.message);
+  });
+};
+
+module.exports.getOrgNode2 = function (req, res, next) {
+  var id = req.swagger.params.id.value;
+
+  var org = new Org();
+  org.load(undefined, id)
+  .then(function(result) {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(result || {}, null, 2));
+  })
+  .catch(function(error) {
+    res.statusCode = 500;
+    return res.end(error.message);
+  });
+};
 
 
 module.exports.getOrgNode = function (req, res, next) {

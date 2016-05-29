@@ -1,14 +1,35 @@
 'use strict';
 
 var Promise = require("bluebird");
-var model_node = require('../model/Node');
+var Node = require('../model/Node');
 var app_url = process.env.APP_URL || 'http://localhost:8080';
 
 module.exports.getNodes = function (req, res, next) {
   var nodes = req.swagger.params.nodes.value.split(',');
   var db = req.swagger.params.db.value;
 
-  model_node.getNodes(db, nodes)
+  var node = new Node();
+  node.getNodes(db, nodes)
+  .then(function(result) {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(result || {}, null, 2));
+  })
+  .catch(function(error) {
+    res.statusCode = 500;
+    return res.end(error.message);
+  });
+};
+
+module.exports.updateNode = function (req, res, next) {
+  var id = req.swagger.params.id.value;
+  var db = req.swagger.params.db.value;
+  var value = req.swagger.params.body.value;
+
+  var node = new Node();
+  node.load(db, id)
+  .then(function() {
+    return node.updateNode(db, id, value, false)
+   })
   .then(function(result) {
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(result || {}, null, 2));
@@ -23,7 +44,24 @@ module.exports.getNode = function (req, res, next) {
   var id = req.swagger.params.id.value;
   var db = req.swagger.params.db.value;
 
-  model_node.getNode(db, id)
+  var node = new Node();
+  node.load(db, id)
+  .then(function(result) {
+    res.setHeader('Content-Type', 'application/json');
+    res.end(JSON.stringify(result || {}, null, 2));
+  })
+  .catch(function(error) {
+    res.statusCode = 500;
+    return res.end(error.message);
+  });
+};
+
+module.exports.deleteNode = function (req, res, next) {
+  var id = req.swagger.params.id.value;
+  var db = req.swagger.params.db.value;
+
+  var node = new Node();
+  node.deleteNode(db, id)
   .then(function(result) {
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(result || {}, null, 2));
@@ -41,7 +79,8 @@ module.exports.searchNode = function getNode (req, res, next) {
 
   var bbox;
 
-  model_node.searchNode(db, query, deleted, bbox)
+  var node = new Node();
+  node.searchNode(db, query, deleted, bbox)
   .then(function(result) {
     res.setHeader('Content-Type', 'application/json');
     res.end(JSON.stringify(result || {}, null, 2));

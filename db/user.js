@@ -1,8 +1,11 @@
+'use strict';
+
 // DB: bookshelf
 var db = require('../db');
 
 module.exports = function(id){
   switch(id) {
+    case 0: return db('U1T'); // User list
     case 'u1t': return db('U1T'); // User list
     case 'u2t': return db('U2T'); // UserProperty type definition
     case 'u3t': return db('U3T'); // UserCategory definition

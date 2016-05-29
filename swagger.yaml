@@ -62,7 +62,8 @@ paths:
           in: path
           name: id
           required: true
-          type: string
+          type: integer
+          format: int64
       responses:
         '200':
           description: OK
@@ -85,7 +86,8 @@ paths:
           in: path
           name: id
           required: true
-          type: string
+          type: integer
+          format: int64
       responses:
         '200':
           description: OK
@@ -108,7 +110,8 @@ paths:
           in: path
           name: id
           required: true
-          type: string
+          type: integer
+          format: int64
       responses:
         '200':
           description: OK
@@ -205,7 +208,7 @@ paths:
             application/json: |-
               [
                 {
-                 "node_id": "555",
+                 "node_id": 555,
                  "revision": 16,
                  "deleted": false,
                  "timestamp": "2015-11-16T15:07:56.000Z",
@@ -234,7 +237,8 @@ paths:
           in: path
           name: id
           required: true
-          type: string
+          type: integer
+          format: int64
       responses:
         '200':
           description: OK
@@ -258,7 +262,8 @@ paths:
           in: path
           name: id
           required: true
-          type: string
+          type: integer
+          format: int64
       responses:
         '200':
           description: OK
@@ -267,7 +272,7 @@ paths:
           examples:
             application/json: |-
               {
-               "node_id": "555",
+               "node_id": 555,
                "revision": 16,
                "deleted": false,
                "timestamp": "2015-11-16T15:07:56.000Z",
@@ -283,7 +288,7 @@ paths:
       tags: ["Nodes"]
     put:
       x-swagger-router-controller: Node
-      operationId: putNode
+      operationId: updateNode
       description: ''
       parameters:
         - description: Database name (e.g. oad)
@@ -295,7 +300,8 @@ paths:
           in: path
           name: id
           required: true
-          type: string
+          type: integer
+          format: int64
         - description: Node definition
           name: body
           required: true
@@ -323,7 +329,8 @@ paths:
           in: path
           name: id
           required: true
-          type: string
+          type: integer
+          format: int64
       responses:
         '200':
           description: OK
@@ -345,12 +352,14 @@ paths:
           in: path
           name: id
           required: true
-          type: string
+          type: integer
+          format: int64
         - description: Node revision
           in: path
           name: revision
           required: true
-          type: number
+          type: integer
+          format: int64
       responses:
         '200':
           description: OK
@@ -367,7 +376,8 @@ paths:
           in: path
           name: id
           required: true
-          type: string
+          type: integer
+          format: int64
       responses:
         '200':
           description: OK
@@ -379,14 +389,15 @@ paths:
       tags: ["NativeClient"]
     get:
       x-swagger-router-controller: NativeClient
-      operationId: getOrgNode
+      operationId: getOrgNode2
       description: ''
       parameters:
         - description: Unique identifier
           in: path
           name: id
           required: true
-          type: string
+          type: integer
+          format: int64
       responses:
         '200':
           description: OK
@@ -401,7 +412,8 @@ paths:
           in: path
           name: id
           required: true
-          type: string
+          type: integer
+          format: int64
         - description: Node definition
           name: body
           required: true
@@ -450,7 +462,8 @@ paths:
           in: path
           name: id
           required: true
-          type: string
+          type: integer
+          format: int64
       responses:
         '200':
           description: OK
@@ -462,14 +475,15 @@ paths:
       tags: ["NativeClient"]
     get:
       x-swagger-router-controller: NativeClient
-      operationId: getUserNode
+      operationId: getUserNode2
       description: ''
       parameters:
         - description: Unique identifier
           in: path
           name: id
           required: true
-          type: string
+          type: integer
+          format: int64
       responses:
         '200':
           description: OK
@@ -484,7 +498,8 @@ paths:
           in: path
           name: id
           required: true
-          type: string
+          type: integer
+          format: int64
         - description: Node definition
           name: body
           required: true
@@ -523,6 +538,23 @@ paths:
         '200':
           description: OK
       summary: Search
+      tags: ["NativeClient"]
+  /nativeclient/permissions/{id}:
+    get:
+      x-swagger-router-controller: NativeClient
+      operationId: getUserPermissionNode2
+      description: ''
+      parameters:
+        - description: Unique identifier
+          in: path
+          name: id
+          required: true
+          type: integer
+          format: int64
+      responses:
+        '200':
+          description: OK
+      summary: Get user permissions
       tags: ["NativeClient"]
   /blobstore/{id}:
     get:

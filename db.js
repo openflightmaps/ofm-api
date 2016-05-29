@@ -1,3 +1,5 @@
+'use strict';
+
 var url = require('url');
 var db_url = url.parse(process.env.DATABASE_URL || "mysql://root:root@localhost:3306/ofm");
 

@@ -1,3 +1,4 @@
+'use strict';
 
 // DB: bookshelf
 var db = require('../db');

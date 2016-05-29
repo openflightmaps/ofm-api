@@ -21,7 +21,7 @@ module.exports.entity_types = new Promise(function(resolve, reject) {
     var entity_types_by_id = {};
     var entity_types_by_name = {};
     s3.map(function(obj) {
-        var entity_type = {id: obj.ServiceEntityTypeID, name: obj.ServiceEntityTypeDescription, description: obj.ServiceEntityTypeDescription, type_format: obj.ServiceEntityTypeFormat};
+        var entity_type = {id: obj.ServiceEntityTypeID, name: obj.ServiceEntityTypeDescription, description: obj.ServiceEntityTypeDescription, type_format: obj.ServiceEntityTypeFormat, multiuse: obj.multipleUse};
         entity_types_by_id[obj.ServiceEntityTypeID] = entity_type;
         entity_types_by_name[obj.ServiceEntityTypeDescription] = entity_type;
     });
@@ -34,9 +34,22 @@ module.exports.up_types = new Promise(function(resolve, reject) {
     var by_id = {};
     var by_name = {};
     s3.map(function(obj) {
-        var up_type = {id: obj.UserPropertiesTypeID, name: obj.UserPropertiesTypeDescription, description: obj.UserPropertiesTypeDescription, type_format: obj.UserPropertiesTypeFormat};
+        var up_type = {id: obj.UserPropertiesTypeID, name: obj.UserPropertiesTypeDescription, description: obj.UserPropertiesTypeDescription, type_format: obj.UserPropertiesTypeFormat, multiuse: obj.multipleUse};
         by_id[obj.UserPropertiesTypeID] = up_type;
         by_name[obj.UserPropertiesTypeDescription] = up_type;
+    });
+    resolve({by_name: by_name, by_id: by_id});
+  });
+});
+
+module.exports.perm_types = new Promise(function(resolve, reject) {
+  db('P1T').then(function(s) {
+    var by_id = {};
+    var by_name = {};
+    s.map(function(obj) {
+        var t = {id: obj.PermissionsTypeID, name: obj.PermissionsTypeDescription, description: obj.PermissionsTypeDescription, type_format: 2};
+        by_id[obj.PermissionsTypeID] = t;
+        by_name[obj.PermissionsTypeDescription] = t;
     });
     resolve({by_name: by_name, by_id: by_id});
   });
