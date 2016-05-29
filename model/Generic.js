@@ -228,7 +228,6 @@ Generic.prototype.getNode = function(db, id) {
           }
 	  return x;
         });
-console.log(attributes);
         var result = {tags: merged, node_id: id, revision: attributes.Revision, deleted: attributes.deleted == 1 ? true : false, timestamp:  attributes.dateOfCreation, user_id: attributes.UserID > 0 ? attributes.UserID : null, value: value};
         resolve(result);
       });

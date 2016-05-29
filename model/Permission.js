@@ -43,7 +43,6 @@ Permission.prototype.load = function(db, id) {
       var value = undefined;
       var et = config.types.value();
       var result = result.map(function(v) {
-console.log(v);
         var t = v[config.id];
         var field;
         var val =  v[config.value];
@@ -57,7 +56,6 @@ console.log(v);
         val = v.PermissionEndValidity;
         merged[field] = val;
       });
-console.log(merged);
       var result = {permissions: merged, user_id: id};
       resolve(result);
     });
