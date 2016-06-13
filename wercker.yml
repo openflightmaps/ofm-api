@@ -1,5 +1,13 @@
 box: node
-#box: nodesource/trusty
+dev:
+  # The steps that will be executed on build
+  steps:
+    - npm-install
+    - npm-test
+
+    - script:
+        code: |
+          npm start
 # Build definition
 build:
   # The steps that will be executed on build

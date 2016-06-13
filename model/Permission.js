@@ -6,6 +6,8 @@ var Generic = require('./Generic');
 
 function Permission() {
   Generic.call(this);
+
+  this.kind = "Permission";
   this.config = {
     app_url: app_url,
     pk: 'UserID',

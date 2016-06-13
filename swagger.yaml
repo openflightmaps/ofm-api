@@ -185,12 +185,6 @@ paths:
       responses:
         '200':
           description: OK
-          examples:
-            application/json:
-              entityids:
-                - '1'
-                - '2'
-                - '3'
       summary: Search
       tags: ["Nodes"]
   /node/{db}:
@@ -214,22 +208,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Nodes'
-          examples:
-            application/json: |-
-              [
-                {
-                 "node_id": 555,
-                 "revision": 16,
-                 "deleted": false,
-                 "timestamp": "2015-11-16T15:07:56.000Z",
-                 "user_id": null,
-                 "tags": {
-                   "fir": 5,
-                   "name": "LSMP 5 TMA",
-                   "type": "Ase/Abd"
-                 }
-                }
-              ]
           headers: {}
       summary: Get multiple node data
       tags: ["Nodes"]
@@ -279,20 +257,6 @@ paths:
           description: OK
           schema:
             $ref: '#/definitions/Node'
-          examples:
-            application/json: |-
-              {
-               "node_id": 555,
-               "revision": 16,
-               "deleted": false,
-               "timestamp": "2015-11-16T15:07:56.000Z",
-               "user_id": null,
-               "tags": {
-                 "fir": 5,
-                 "name": "LSMP 5 TMA",
-                 "type": "Ase/Abd"
-               }
-              }
           headers: {}
       summary: Get node data
       tags: ["Nodes"]
@@ -324,6 +288,35 @@ paths:
           examples: {}
           headers: {}
       summary: Replace node with new node
+      tags: ["Nodes"]
+    patch:
+      x-swagger-router-controller: Node
+      operationId: patchNode
+      description: ''
+      parameters:
+        - description: Database name (e.g. oad)
+          name: db
+          required: true
+          in: path
+          type: string
+        - description: Unique changeset identifier
+          in: path
+          name: id
+          required: true
+          type: integer
+          format: int64
+        - description: Node definition
+          name: body
+          required: true
+          in: body
+          schema:
+            $ref: '#/definitions/Node'
+      responses:
+        '200':
+          description: OK
+          examples: {}
+          headers: {}
+      summary: Partially update fields of a node
       tags: ["Nodes"]
   /node/{db}/{id}/_history:
     get:
@@ -399,7 +392,7 @@ paths:
       tags: ["NativeClient"]
     get:
       x-swagger-router-controller: NativeClient
-      operationId: getOrgNode2
+      operationId: getOrgNode
       description: ''
       parameters:
         - description: Unique identifier
@@ -485,7 +478,7 @@ paths:
       tags: ["NativeClient"]
     get:
       x-swagger-router-controller: NativeClient
-      operationId: getUserNode2
+      operationId: getUserNode
       description: ''
       parameters:
         - description: Unique identifier
@@ -552,7 +545,7 @@ paths:
   /nativeclient/permissions/{id}:
     get:
       x-swagger-router-controller: NativeClient
-      operationId: getUserPermissionNode2
+      operationId: getUserPermissionNode
       description: ''
       parameters:
         - description: Unique identifier
@@ -613,10 +606,16 @@ definitions:
   Node:
     type: object
     required:
-      - node_id
+      - kind
+      - id
       - revision
     properties:
-      node_id:
+      kind:
+        type: string
+        default: Node
+      fields:
+        type: string
+      id:
         type: integer
         format: int64
       revision:
@@ -624,29 +623,39 @@ definitions:
         format: int64
       deleted:
         type: boolean
-      timestamp:
+      updated:
         type: string
         format: datetime
-      user_id:
+      userId:
         type: integer
       tags:
         type: object
         items:
           $ref: '#/definitions/Tags'
-      value:
-        type: string
-        format: xml
   Tags:
     additionalProperties:
       type: string
+    example:
+      - fir: '5'
+      - name: LSMP 5 TMA
+      - type: Ase/Abd
   Regions:
     type: array
     items:
       $ref: '#/definitions/Region'
   Region:
     type: object
-    additionalProperties:
-      type: string
+    properties:
+      id:
+        type: string
+      id_internal:
+        type: string
+      name:
+        type: string
+    example:
+      name: Wien
+      id: LOVV
+      id_internal: 0
   NodeQuery:
     type: object
     additionalProperties:

@@ -1,23 +1,18 @@
 'use strict';
 
-var Promise = require("bluebird");
 var Node = require('../model/Node');
-var app_url = process.env.APP_URL || 'http://localhost:8080';
+var helper = require('../util/express_helper');
 
 module.exports.getNodes = function (req, res, next) {
   var nodes = req.swagger.params.nodes.value.split(',');
   var db = req.swagger.params.db.value;
 
   var node = new Node();
-  node.getNodes(db, nodes)
+  var p = node.getNodes(db, nodes)
   .then(function(result) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(result || {}, null, 2));
-  })
-  .catch(function(error) {
-    res.statusCode = 500;
-    return res.end(error.message);
+    return({kind: "NodeList", items: result});
   });
+  helper.handle(p, req, res, next);
 };
 
 module.exports.updateNode = function (req, res, next) {
@@ -26,18 +21,11 @@ module.exports.updateNode = function (req, res, next) {
   var value = req.swagger.params.body.value;
 
   var node = new Node();
-  node.load(db, id)
+  var p = node.load(db, id)
   .then(function() {
     return node.updateNode(db, id, value, false)
    })
-  .then(function(result) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(result || {}, null, 2));
-  })
-  .catch(function(error) {
-    res.statusCode = 500;
-    return res.end(error.message);
-  });
+  helper.handle(p, req, res, next);
 };
 
 module.exports.getNode = function (req, res, next) {
@@ -45,15 +33,8 @@ module.exports.getNode = function (req, res, next) {
   var db = req.swagger.params.db.value;
 
   var node = new Node();
-  node.load(db, id)
-  .then(function(result) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(result || {}, null, 2));
-  })
-  .catch(function(error) {
-    res.statusCode = 500;
-    return res.end(error.message);
-  });
+  var p = node.load(db, id)
+  helper.handle(p, req, res, next);
 };
 
 module.exports.deleteNode = function (req, res, next) {
@@ -61,18 +42,11 @@ module.exports.deleteNode = function (req, res, next) {
   var db = req.swagger.params.db.value;
 
   var node = new Node();
-  node.deleteNode(db, id)
-  .then(function(result) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(result || {}, null, 2));
-  })
-  .catch(function(error) {
-    res.statusCode = 500;
-    return res.end(error.message);
-  });
+  var p = node.deleteNode(db, id)
+  helper.handle(p, req, res, next);
 };
 
-module.exports.searchNode = function getNode (req, res, next) {
+module.exports.searchNode = function (req, res, next) {
   var db = req.swagger.params.db.value;
   var query = req.swagger.params.query.value;
   var deleted = req.swagger.params.deleted.value;
@@ -80,13 +54,10 @@ module.exports.searchNode = function getNode (req, res, next) {
   var bbox;
 
   var node = new Node();
-  node.searchNode(db, query, deleted, bbox)
-  .then(function(result) {
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(result || {}, null, 2));
+  var p = node.searchNode(db, query, deleted, bbox)
+  .then(function(data) {
+    var result = {kind: "NodeNumberList", nodelist: data};
+    return result;
   })
-  .catch(function(error) {
-    res.statusCode = 500;
-    return res.end(error.message);
-  });
+  helper.handle(p, req, res, next);
 };

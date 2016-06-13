@@ -7,7 +7,7 @@ var Generic = require('./Generic');
 function Node() {
   Generic.call(this);
 
-  this.name = "Node";
+  this.kind = "Node";
   this.config = {
     app_url: app_url,
     pk: 'ServiceEntityID',
@@ -24,4 +24,3 @@ Node.prototype = Object.create(Generic.prototype);
 Node.prototype.constructor = Node;
 
 module.exports = Node;
-

@@ -7,7 +7,7 @@ var Generic = require('./Generic');
 function User() {
   Generic.call(this);
 
-  this.name = "User";
+  this.kind = "User";
   this.config = {
     app_url: app_url,
     pk: 'UserID',

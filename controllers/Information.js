@@ -12,12 +12,13 @@ var db_regions = db('AMMNT_FIR');
 var User = require('../model/User');
 var Org = require('../model/Org');
 var Permission = require('../model/Permission');
+var helper = require('../util/express_helper');
 
 module.exports.getUserInfo = function (req, res, next) {
   var id = 1; //req.swagger.params.id.value;
 
   var user = new User();
-  user.load(undefined, id)
+  var p = user.load(undefined, id)
   .then(function(result) {
     var perm = new Permission();
     return Promise.all([result, perm.load(undefined, id)]);
@@ -25,29 +26,21 @@ module.exports.getUserInfo = function (req, res, next) {
   .then(function(data) {
     var result = data[0];
     result.permissions = data[1].permissions;
-    result.user_id = id;
-    delete(result.node_id);
+    result.id = id;
+    delete(result.userId);
     delete(result.deleted);
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(result || {}, null, 2));
-  })
-  .catch(function(error) {
-    res.statusCode = 500;
-    return res.end(error.message);
+    return(result);
   });
+  helper.handle(p, req, res, next);
 };
 
 module.exports.getRegions = function(req, res, next) {
-  db_regions.select().then(function(result) {
-    if (!result) {
-      res.statusCode = 404;
-      return res.end();
-    }
+  var p = db_regions.select().then(function(result) {
     var regions = {};
     result.map(function(v) {
       regions[v.IcaoCode] = {name: v.Name, id: v.PK};
     });
-    res.setHeader('Content-Type', 'application/json');
-    res.end(JSON.stringify(regions || {}, null, 2));
+    return(regions);
   });
+  helper.handle(p, req, res, next);
 };

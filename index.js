@@ -6,6 +6,8 @@ var swaggerTools = require('swagger-tools');
 var jsyaml = require('js-yaml');
 var fs = require('fs');
 var serverPort = process.env.PORT || 8080;
+var ofmMiddleware = require('./middleware');
+var addRequestId = require('express-request-id')();
 
 // swaggerRouter configuration
 var options = {
@@ -20,6 +22,10 @@ var swaggerDoc = jsyaml.safeLoad(spec);
 
 // Initialize the Swagger middleware
 swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
+
+  // Add Request ID
+  app.use(addRequestId);
+
   // Interpret Swagger resources and attach metadata to request - must be first in swagger-tools middleware chain
   app.use(middleware.swaggerMetadata());
 
@@ -31,6 +37,8 @@ swaggerTools.initializeMiddleware(swaggerDoc, function (middleware) {
 
   // Serve the Swagger documents and Swagger UI
   app.use(middleware.swaggerUi());
+
+  app.use(ofmMiddleware.apiVersion);
 
   // Start the server
   http.createServer(app).listen(serverPort, function () {
