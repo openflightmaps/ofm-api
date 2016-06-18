@@ -26,17 +26,19 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Regions'
+            $ref: '#/definitions/Response'
       summary: List all Regions
       tags: ["Information"]   
   /info/userinfo:
     get:
       x-swagger-router-controller: Information
       operationId: getUserInfo
-      description: 'Returns infor about the currently logged in user'
+      description: 'Returns info about the currently logged in user'
       responses:
         '200':
           description: OK
+          schema:
+            $ref: '#/definitions/Response'
       summary: Show user information
       tags: ["Information"]
   /changeset/{db}/_create:
@@ -78,6 +80,8 @@ paths:
         '200':
           description: OK
           examples: {}
+          schema:
+            $ref: '#/definitions/Response'
           headers: {}
       summary: Download all changes associated with this changeset
       tags: ["NotImplementedYet"]
@@ -126,6 +130,8 @@ paths:
         '200':
           description: OK
           examples: {}
+          schema:
+            $ref: '#/definitions/Response'
           headers: {}
       summary: Expand bounding box of change
       tags: ["NotImplementedYet"]
@@ -185,6 +191,8 @@ paths:
       responses:
         '200':
           description: OK
+          schema:
+            $ref: '#/definitions/Response'
       summary: Search
       tags: ["Nodes"]
   /node/{db}:
@@ -207,7 +215,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Nodes'
+            $ref: '#/definitions/Response'
           headers: {}
       summary: Get multiple node data
       tags: ["Nodes"]
@@ -256,7 +264,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Node'
+            $ref: '#/definitions/Response'
           headers: {}
       summary: Get node data
       tags: ["Nodes"]
@@ -315,6 +323,8 @@ paths:
         '200':
           description: OK
           examples: {}
+          schema:
+            $ref: '#/definitions/Response'
           headers: {}
       summary: Partially update fields of a node
       tags: ["Nodes"]
@@ -338,6 +348,8 @@ paths:
         '200':
           description: OK
           examples: {}
+          schema:
+            $ref: '#/definitions/Response'
           headers: {}
       summary: Get node history
       tags: ["Nodes", "NotImplementedYet"]
@@ -367,6 +379,8 @@ paths:
         '200':
           description: OK
           examples: {}
+          schema:
+            $ref: '#/definitions/Response'
           headers: {}
       summary: Get specific revision of node
       tags: ["Nodes", "NotImplementedYet"]
@@ -385,6 +399,8 @@ paths:
         '200':
           description: OK
           examples: {}
+          schema:
+            $ref: '#/definitions/Response'
           headers: {}
         '404':
           description: Node not found
@@ -404,6 +420,8 @@ paths:
       responses:
         '200':
           description: OK
+          schema:
+            $ref: '#/definitions/Response'
       summary: Get node data
       tags: ["NativeClient"]
     put:
@@ -454,6 +472,8 @@ paths:
       responses:
         '200':
           description: OK
+          schema:
+            $ref: '#/definitions/Response'
       summary: Search
       tags: ["NativeClient"]
   /nativeclient/user/{id}:
@@ -470,7 +490,8 @@ paths:
       responses:
         '200':
           description: OK
-          examples: {}
+          schema:
+            $ref: '#/definitions/Response'
           headers: {}
         '404':
           description: Node not found
@@ -490,6 +511,8 @@ paths:
       responses:
         '200':
           description: OK
+          schema:
+            $ref: '#/definitions/Response'
       summary: Get node data
       tags: ["NativeClient"]
     put:
@@ -540,6 +563,8 @@ paths:
       responses:
         '200':
           description: OK
+          schema:
+            $ref: '#/definitions/Response'
       summary: Search
       tags: ["NativeClient"]
   /nativeclient/permissions/{id}:
@@ -557,6 +582,8 @@ paths:
       responses:
         '200':
           description: OK
+          schema:
+            $ref: '#/definitions/Response'
       summary: Get user permissions
       tags: ["NativeClient"]
   /blobstore/{id}:
@@ -596,23 +623,29 @@ paths:
       responses:
         '200':
           description: OK
+          schema:
+            $ref: '#/definitions/Response'
       summary: Create new blob
       tags: ["NativeClient"]
 definitions:
-  Nodes:
-    type: array
-    items:
-      $ref: '#/definitions/Node'
+  NodeList:
+    type: object
+    allOf:
+      - $ref: '#/definitions/ResponseData'
+      - type: object
+    required:
+      - items
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Node'
   Node:
     type: object
-    required:
-      - kind
-      - id
-      - revision
+    allOf:
+      - $ref: '#/definitions/ResponseData'
+      - type: object
     properties:
-      kind:
-        type: string
-        default: Node
       fields:
         type: string
       id:
@@ -632,6 +665,10 @@ definitions:
         type: object
         items:
           $ref: '#/definitions/Tags'
+    required:
+      - kind
+      - id
+      - revision
   Tags:
     additionalProperties:
       type: string
@@ -661,6 +698,52 @@ definitions:
     additionalProperties:
       type: string
     example: {"Flight Information Region": "5", "Type": "Ase/Abd"}
+  ResponseData:
+    type: object
+    discriminator: kind
+    required:
+      - kind
+    properties:
+      kind:
+        type: string
+  Response:
+    type: object
+    properties:
+      apiVersion:
+        type: string
+      id:
+        type: string
+      data:
+        $ref: '#/definitions/ResponseData'
+  NodeNumberList:
+    type: object
+    allOf:
+      - $ref: '#/definitions/ResponseData'
+    required:
+      - nodelist
+    properties:
+      nodelist:
+        type: array
+        items:
+          type: integer
+  User:
+    type: object
+    allOf:
+      - $ref: '#/definitions/ResponseData'
+    required:
+      - id
+      - tags
+    properties:
+      id:
+        type: integer
+      tags:
+        type: object
+        items:
+          $ref: '#/definitions/Tags'
+      permissions:
+        type: object
+        items:
+          $ref: '#/definitions/Tags'
 securityDefinitions:
   BasicAuth:
     type: basic
