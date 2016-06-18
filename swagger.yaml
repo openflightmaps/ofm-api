@@ -744,6 +744,28 @@ definitions:
         type: object
         items:
           $ref: '#/definitions/Tags'
+      organizations:
+        type: array
+        items:
+          type: integer
+  Organization:
+    type: object
+    allOf:
+      - $ref: '#/definitions/ResponseData'
+    required:
+      - id
+      - tags
+    properties:
+      id:
+        type: integer
+      tags:
+        type: object
+        items:
+          $ref: '#/definitions/Tags'
+      permissions:
+        type: object
+        items:
+          $ref: '#/definitions/Tags'
 securityDefinitions:
   BasicAuth:
     type: basic

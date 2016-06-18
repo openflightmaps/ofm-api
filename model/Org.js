@@ -3,10 +3,10 @@
 var static_data = require('../static');
 var Generic = require('./Generic');
 
-function User() {
+function Org() {
   Generic.call(this);
 
-  this.kind = "User";
+  this.kind = "Organization";
   this.config = {
     app_url: this.config.app_url,
     legacy_mode: this.config.legacy_mode,
@@ -15,14 +15,15 @@ function User() {
     id: "UserPropertiesTypeID",
     value: "UserPropertiesTypeValue",
     db: require('../db/org'),
-    dbs: undefined,
+    dbs: static_data.org_dbs,
     blobembed: true,
     types: static_data.up_types, // UserPropertiesTypeID
+    tag_map: static_data.tag_map,
   };
 };
 
-User.prototype = Object.create(Generic.prototype);
-User.prototype.constructor = User;
+Org.prototype = Object.create(Generic.prototype);
+Org.prototype.constructor = Org;
 
-module.exports = User;
+module.exports = Org;
 

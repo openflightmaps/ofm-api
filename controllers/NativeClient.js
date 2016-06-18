@@ -39,20 +39,21 @@ NativeClient.getOrgNode = function (req, res, next) {
 };
 
 NativeClient.searchOrgNode = function (req, res, next) {
-  var p = db_org(0).select().then(function(result) {
-    var orgs = {};
-    var result = result.map(function(v) { return {id: v.OrganizationID, name: v.OrganizationName}});
-    return({items: result});
+  var org = new Org();
+  var p = org.searchNode('orgs', {}, true, undefined, false)
+  .then(function(data) {
+    var result = {kind: "NodeNumberList", nodelist: data};
+    return result;
   });
   helper.handle(p, req, res, next);
 };
 
 NativeClient.searchUserNode = function (req, res, next) {
-  var p = db_user('u1t').select().then(function(result) {
-    var users = {};
-    var result = result.map(function(v) {return ({uid: v.UserID, username:  v.Username, language: v.MainlanguagePref })});
-
-    return({items: result});
+  var user = new User();
+  var p = user.searchNode('users', {}, true, undefined, false)
+  .then(function(data) {
+    var result = {kind: "NodeNumberList", nodelist: data};
+    return result;
   });
   helper.handle(p, req, res, next);
 };

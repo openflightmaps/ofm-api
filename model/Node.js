@@ -16,7 +16,9 @@ function Node() {
     value: "ServiceEntityPropertiesTypeValue",
     db: require('../db/node'),
     dbs: static_data.service_dbs,
+    blobembed: false,
     types: static_data.entity_types,
+    tag_map: static_data.tag_map,
   };
 };
 

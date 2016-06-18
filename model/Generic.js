@@ -159,6 +159,10 @@ Generic.prototype.load = function(db, id) {
             val = new String(val);
           }
 
+          // map value using configured mapper
+          if (config.tag_map && config.tag_map[field]) {
+            val = config.tag_map[field].value().by_id[val].id;
+          }
 	  if (field) {
             if (wl != undefined && wl.multiuse == 1) {
               if (merged[field] != undefined)
@@ -179,7 +183,7 @@ Generic.prototype.load = function(db, id) {
         self.revision = attributes.Revision;
         self.deleted = attributes.deleted == 1 ? true : false;
         self.updated = attributes.dateOfCreation;
-        self.userId = attributes.UserID > 0 ? attributes.UserID : null;
+        self.userId = attributes.UserID > 0 ? attributes.UserID : undefined;
 
         resolve(self);
       });
@@ -187,7 +191,8 @@ Generic.prototype.load = function(db, id) {
   });
 };
 
-Generic.prototype.searchNode = function(db, query, deleted, bbox) {
+Generic.prototype.searchNode = function(db, query, deleted, bbox, embedresult) {
+  var self = this;
   var config = this.config;
   return new Promise(function(resolve, reject) {
     var db_id = config.dbs.value().by_name[db].id;
@@ -208,7 +213,9 @@ Generic.prototype.searchNode = function(db, query, deleted, bbox) {
       q.where(qin + '.' + config.id, qf).where(qin + '.' + config.value, qv);
     };
 
-    q = q.where(mt + '.' + config.parent, db_id );
+    if (config.parent) {
+      q = q.where(mt + '.' + config.parent, db_id );
+    };
 
     if (!deleted) {
       q = q.where(function() {
@@ -217,12 +224,22 @@ Generic.prototype.searchNode = function(db, query, deleted, bbox) {
     };
 
     q.select(mt + '.' + config.pk).then(function(result) {
-      var result = result.map(function(v) { return v[config.pk]});
-
+      var result = result.map(function(v) {
+        var v = v[config.pk];
+        if (embedresult) {
+          var n = new self.__proto__.constructor;
+          return n.load(db,v);
+        } else {
+          return v;
+        }
+      });
       if (!result) {
         fail("notfound");
       };
-      resolve(result);
+
+      Promise.all(result).then(function(results) {
+        resolve(results);
+      });
     });
   });
 };

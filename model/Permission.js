@@ -18,6 +18,7 @@ function Permission() {
     dbs: undefined,
     blobembed: true,
     types: static_data.perm_types,
+    tag_map: static_data.tag_map,
   };
 };
 

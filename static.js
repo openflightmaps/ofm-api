@@ -68,6 +68,16 @@ module.exports.service_dbs = new Promise(function(resolve, reject) {
   });
 });
 
+module.exports.user_dbs = new Promise(function(resolve, reject) {
+  var un = {id: 0, value: 'users'};
+  resolve({by_id: {0: un}, by_name: {'users': un}});
+});
+
+module.exports.org_dbs = new Promise(function(resolve, reject) {
+  var un = {id: 0, value: 'orgs'};
+  resolve({by_id: {0: un}, by_name: {'orgs': un}});
+});
+
 module.exports.regions = new Promise(function(resolve, reject) {
   regions.then(function(result) {
     if (!result) {
@@ -139,5 +149,15 @@ module.exports.dbs =
   'cfe': { id: 7, description: 'CFE definition file', name: 'cfe' }, // blob: binary (ofm_CommmonFormatExport xml file) named VFR Design Set???
   'map_regions': { id: 8, description: 'Map Regions', name: 'map_regions' }
 }
+
+module.exports.tag_map = {
+//  'FIR composition': module.exports.regions,
+//  'AIS contributor : Last FIR viewed': module.exports.regions,
+//  'Flight Information Region':  module.exports.regions,
+
+//  'region':  module.exports.regions,
+
+//  'User Category': module.exports.user_categories,
+};
 
 // bugs: record 416 3181 3216 3217

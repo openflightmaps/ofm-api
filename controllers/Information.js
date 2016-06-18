@@ -21,11 +21,12 @@ module.exports.getUserInfo = function (req, res, next) {
   var p = user.load(undefined, id)
   .then(function(result) {
     var perm = new Permission();
-    return Promise.all([result, perm.load(undefined, id)]);
+    return Promise.all([result, perm.load(undefined, id), user.loadu2o(undefined, id)]);
   })
   .then(function(data) {
     var result = data[0];
     result.permissions = data[1].permissions;
+    result.organizations = data[2];
     result.id = id;
     delete(result.userId);
     delete(result.deleted);

@@ -9,6 +9,7 @@ module.exports = function(id){
     case 'u1t': return db('U1T'); // User list
     case 'u2t': return db('U2T'); // UserProperty type definition
     case 'u3t': return db('U3T'); // UserCategory definition
+    case 'u1_o1a': return db('U1_O1A'); // User2Organization mapping
     case 1: return db('U2A1');
     case 2: return db('U2A2');
     case 3: return db('U2A3');
