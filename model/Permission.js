@@ -1,6 +1,5 @@
 'use strict';
 
-var app_url = process.env.APP_URL || 'http://localhost:8080';
 var static_data = require('../static');
 var Generic = require('./Generic');
 
@@ -9,7 +8,8 @@ function Permission() {
 
   this.kind = "Permission";
   this.config = {
-    app_url: app_url,
+    app_url: this.config.app_url,
+    legacy_mode: this.config.legacy_mode,
     pk: 'UserID',
     parent: undefined,
     id: "PermissionTypeID",

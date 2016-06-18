@@ -1,12 +1,18 @@
 'use strict';
 
+var app_url = process.env.APP_URL || 'http://localhost:8080';
+var legacy_mode = process.env.LEGACY_MODE || true;
+
 var Promise = require("bluebird");
 var knex = require('../db');
 
 function Generic() {
   this.kind = "Generic";
   this.tags = {};
-  this.config = {};
+  this.config = {
+    app_url: app_url,
+    legacy_mode: legacy_mode,
+  };
   Object.defineProperty(this, 'config', {
     enumerable: false
   });
@@ -138,7 +144,7 @@ Generic.prototype.load = function(db, id) {
             if (config.blobembed) {
               val = 'data:application/binary-data;base64:' + val.toString('base64');
             } else {
-              val = config.app_url + "/api/blobstore/" + v.PK;
+              val = config.app_url + "/blobstore/" + v.PK;
             }
           }
 
@@ -147,6 +153,11 @@ Generic.prototype.load = function(db, id) {
 	  } else if (wl) {
 		field = "XXX_SHORTNAME_MISSING_" + et.by_id[t].description;
 	  }
+
+          // in legacy mode, always return strings
+          if (config.legacy_mode) {
+            val = new String(val);
+          }
 
 	  if (field) {
             if (wl != undefined && wl.multiuse == 1) {
