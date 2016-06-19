@@ -10,7 +10,7 @@ function Generic() {
   this.kind = "Generic";
   this.tags = {};
   this.config = {
-    app_url: app_url,
+    app_url: app_url + '/0.1',
     legacy_mode: legacy_mode,
   };
   Object.defineProperty(this, 'config', {
