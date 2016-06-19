@@ -3,7 +3,7 @@
 var Node = require('../model/Node');
 var helper = require('../util/express_helper');
 
-module.exports.getNodes = function (req, res, next) {
+module.exports.getMultipleNodes = function (req, res, next) {
   var nodes = req.swagger.params.nodes.value.split(',');
   var db = req.swagger.params.db.value;
 

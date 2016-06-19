@@ -195,10 +195,10 @@ paths:
             $ref: '#/definitions/Response'
       summary: Search
       tags: ["Nodes"]
-  /node/{db}:
+  /node/{db}/_multi:
     get:
       x-swagger-router-controller: Node
-      operationId: getNodes
+      operationId: getMultipleNodes
       description: ''
       parameters:
         - description: Database name (e.g. oad)
@@ -676,10 +676,15 @@ definitions:
       - fir: '5'
       - name: LSMP 5 TMA
       - type: Ase/Abd
-  Regions:
-    type: array
-    items:
-      $ref: '#/definitions/Region'
+  RegionList:
+    type: object
+    allOf:
+      - $ref: '#/definitions/ResponseData'
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Region'
   Region:
     type: object
     properties:

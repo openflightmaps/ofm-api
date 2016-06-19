@@ -37,11 +37,11 @@ module.exports.getUserInfo = function (req, res, next) {
 
 module.exports.getRegions = function(req, res, next) {
   var p = db_regions.select().then(function(result) {
-    var regions = {};
-    result.map(function(v) {
-      regions[v.IcaoCode] = {name: v.Name, id: v.PK};
+    var items = result.map(function(v) {
+      return { kind: "Region", id: v.IcaoCode, name: v.Name, internal_id: v.PK};
     });
-    return(regions);
+    var result = {kind: "RegionList", items: items};
+    return(result);
   });
   helper.handle(p, req, res, next);
 };
