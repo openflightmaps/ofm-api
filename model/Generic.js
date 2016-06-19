@@ -171,7 +171,7 @@ Generic.prototype.load = function(db, id) {
 	        merged[field] = [val];
             } else {
               if (merged[field] != undefined)
-                merged[field] = "MULTIUSE NOT ALLOWED!"; // ABORT!!!
+                console.log("MULTIUSE NOT ALLOWED!" + field); // ABORT!!!
               else
 	        merged[field] = val;
             };
