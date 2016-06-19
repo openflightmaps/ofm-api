@@ -11,6 +11,9 @@ Helper.prototype.sendResponse = function(data, req, res, next) {
 
 Helper.prototype.sendError = function(error, req, res, next) {
   res.statusCode = 500;
+  if (error && error.code == "notfound") {
+    res.statusCode = 404;
+  }
   res.setHeader('Content-Type', 'application/json');
   console.log(error);
   res.end(JSON.stringify({apiVersion: '0.1', id: req.id, error: error || {}}, null, 2));
