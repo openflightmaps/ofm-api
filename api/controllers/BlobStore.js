@@ -3,9 +3,9 @@
 var Promise = require("bluebird");
 
 // DB: knex
-var db = require('../db');
-var cached = require('../static');
-var db_node = require('../db/node');
+var db = require('../../db');
+var cached = require('../../static');
+var db_node = require('../../db/node');
 
 module.exports.getBlob = function (req, res, next) {
   var id = req.swagger.params.id.value;

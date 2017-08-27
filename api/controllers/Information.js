@@ -3,16 +3,16 @@
 var Promise = require("bluebird");
 
 // DB: bookshelf
-var db = require('../db');
-var cached = require('../static');
+var db = require('../../db');
+var cached = require('../../static');
 
 // main index
 var db_regions = db('AMMNT_FIR');
 
-var User = require('../model/User');
-var Org = require('../model/Org');
-var Permission = require('../model/Permission');
-var helper = require('../util/express_helper');
+var User = require('../../model/User');
+var Org = require('../../model/Org');
+var Permission = require('../../model/Permission');
+var helper = require('../../util/express_helper');
 
 module.exports.getUserInfo = function (req, res, next) {
   var id = 0; //req.swagger.params.id.value;

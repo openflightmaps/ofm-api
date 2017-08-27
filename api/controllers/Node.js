@@ -1,7 +1,7 @@
 'use strict';
 
-var Node = require('../model/Node');
-var helper = require('../util/express_helper');
+var Node = require('../../model/Node');
+var helper = require('../../util/express_helper');
 
 module.exports.getMultipleNodes = function (req, res, next) {
   var nodes = req.swagger.params.nodes.value.split(',');

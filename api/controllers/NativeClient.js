@@ -3,14 +3,14 @@
 var Promise = require("bluebird");
 
 // DB: bookshelf
-var db = require('../db');
-var static_data = require('../static');
-var helper = require('../util/express_helper');
-var db_user = require('../db/user');
-var db_org = require('../db/org');
-var User = require('../model/User');
-var Org = require('../model/Org');
-var Permission = require('../model/Permission');
+var db = require('../../db');
+var static_data = require('../../static');
+var helper = require('../../util/express_helper');
+var db_user = require('../../db/user');
+var db_org = require('../../db/org');
+var User = require('../../model/User');
+var Org = require('../../model/Org');
+var Permission = require('../../model/Permission');
 
 var NativeClient = {};
 

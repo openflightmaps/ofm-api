@@ -2,25 +2,28 @@
   "name": "ofm-api",
   "version": "0.0.1",
   "description": "Open flightmap data api.",
-  "main": "index.js",
-  "keywords": [
-    "swagger"
-  ],
-  "license": "MIT",
-  "private": true,
+  "main": "app.js",
   "dependencies": {
+    "express": "^4.12.3",
+    "swagger-express-mw": "^0.1.0",
     "bluebird": "^3.3.5",
     "bookshelf": "^0.9.4",
-    "connect": "^3.4.1",
     "dotenv": "^2.0.0",
+    "express-healthcheck": "^0.1.0",
     "express-request-id": "^1.1.0",
     "js-yaml": "^3.3.0",
     "knex": "^0.10.0",
     "mysql": "^2.10.2",
-    "promise": "^7.1.1",
-    "swagger-tools": "^0.9.16"
+    "promise": "^7.1.1"
+  },
+  "devDependencies": {
+    "should": "^7.1.0",
+    "supertest": "^1.0.0"
   },
   "scripts": {
-    "start": "node index.js"
-  }
+    "start": "node app.js",
+    "test": "swagger project test"
+  },
+  "license": "MIT",
+  "private": true
 }
