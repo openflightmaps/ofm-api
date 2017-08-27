@@ -16,7 +16,7 @@ function Permission() {
     value: "UserPropertiesTypeValue",
     db: require('../db/perm'),
     dbs: undefined,
-    blobembed: true,
+    blobembed: false,
     types: static_data.perm_types,
     tag_map: static_data.tag_map,
   };

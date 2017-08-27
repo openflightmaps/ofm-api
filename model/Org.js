@@ -16,7 +16,7 @@ function Org() {
     value: "UserPropertiesTypeValue",
     db: require('../db/org'),
     dbs: static_data.org_dbs,
-    blobembed: true,
+    blobembed: false,
     types: static_data.up_types, // UserPropertiesTypeID
     tag_map: static_data.tag_map,
   };

@@ -16,7 +16,7 @@ function User() {
     value: "UserPropertiesTypeValue",
     db: require('../db/user'),
     dbs: static_data.user_dbs,
-    blobembed: true,
+    blobembed: false,
     types: static_data.up_types, // UserPropertiesTypeID
     tag_map: static_data.tag_map,
   };
