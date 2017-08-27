@@ -15,7 +15,7 @@ var Permission = require('../model/Permission');
 var helper = require('../util/express_helper');
 
 module.exports.getUserInfo = function (req, res, next) {
-  var id = 1; //req.swagger.params.id.value;
+  var id = 0; //req.swagger.params.id.value;
 
   var user = new User();
   var p = user.load(undefined, id)
