@@ -21,7 +21,8 @@ var config = {
 };
 
 // health check
-app.use('/health', require('express-healthcheck')());
+app.use('^/$', require('express-healthcheck')());
+app.use('^/health$', require('express-healthcheck')());
 
 SwaggerExpress.create(config, function(err, swaggerExpress) {
   if (err) { throw err; }
