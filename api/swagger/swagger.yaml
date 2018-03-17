@@ -17,6 +17,8 @@ produces:
 security:
   - BasicAuth: []
 paths:
+  /swagger.json:
+    x-swagger-pipe: swagger_raw
   /info/regions:
     get:
       x-swagger-router-controller: Information

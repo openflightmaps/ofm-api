@@ -27,6 +27,10 @@ app.use('^/health$', require('express-healthcheck')());
 SwaggerExpress.create(config, function(err, swaggerExpress) {
   if (err) { throw err; }
 
+  // enable swagger-ui
+  var swaggerUiMiddleware = require('swagger-ui-middleware');
+  swaggerUiMiddleware.hostUI(app, {path: '/api-doc', overrides: __dirname+'/swagger-ui'});
+
   // install middleware
   swaggerExpress.register(app);
 
