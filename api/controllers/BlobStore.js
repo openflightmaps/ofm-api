@@ -15,6 +15,6 @@ module.exports.getBlob = function (req, res, next) {
       return res.end();
     }
     res.setHeader('Content-Type', 'application/octet-stream');
-    res.end(result.ServiceEntityPropertiesTypeValue);
+    res.end(result.ServiceEntityPropertiesTypeValue, 'binary');
   });
 };
