@@ -43,102 +43,8 @@ paths:
             $ref: '#/definitions/Response'
       summary: Show user information
       tags: ["Information"]
-  /changeset/{db}/_create:
-    put:
-      x-swagger-router-controller: Changeset
-      operationId: createChangeset
-      description: ''
-      parameters:
-        - description: Database name (e.g. oad)
-          name: db
-          required: true
-          in: path
-          type: string
-      responses:
-        '200':
-          description: OK
-          examples: {}
-          headers: {}
-      summary: Create new changeset
-      tags: ["NotImplementedYet"]
-  /changeset/{db}/{id}:
-    get:
-      x-swagger-router-controller: Changeset
-      operationId: getChangeset
-      description: ''
-      parameters:
-        - description: Database name (e.g. oad)
-          name: db
-          required: true
-          in: path
-          type: string
-        - description: Unique changeset identifier
-          in: path
-          name: id
-          required: true
-          type: integer
-          format: int64
-      responses:
-        '200':
-          description: OK
-          examples: {}
-          schema:
-            $ref: '#/definitions/Response'
-          headers: {}
-      summary: Download all changes associated with this changeset
-      tags: ["NotImplementedYet"]
-  /changeset/{db}/{id}/_close:
-    put:
-      x-swagger-router-controller: Changeset
-      operationId: closeChangeset
-      description: ''
-      parameters:
-        - description: Database name (e.g. oad)
-          name: db
-          required: true
-          in: path
-          type: string
-        - description: Unique changeset identifier
-          in: path
-          name: id
-          required: true
-          type: integer
-          format: int64
-      responses:
-        '200':
-          description: OK
-          examples: {}
-          headers: {}
-      summary: Close changeset
-      tags: ["NotImplementedYet"]
-  /changeset/{db}/{id}/_expand_bbox:
+  /node/{db}:
     post:
-      x-swagger-router-controller: Changeset
-      operationId: expandChangesetBbox
-      description: ''
-      parameters:
-        - description: Database name (e.g. oad)
-          name: db
-          required: true
-          in: path
-          type: string
-        - description: Unique changeset identifier
-          in: path
-          name: id
-          required: true
-          type: integer
-          format: int64
-      responses:
-        '200':
-          description: OK
-          examples: {}
-          schema:
-            $ref: '#/definitions/Response'
-          headers: {}
-      summary: Expand bounding box of change
-      tags: ["NotImplementedYet"]
-  /node/{db}/_create:
-    put:
       x-swagger-router-controller: Node
       operationId: createNode
       description: ''
@@ -159,6 +65,8 @@ paths:
           description: OK
           examples: {}
           headers: {}
+        '400' :
+          description: "Node already exists, searchTags duplicate. searchTags generated server-side. switch to FIR+Type+Designator, returns id of existing object"
       summary: Create new node
       tags: ["Nodes"]
   /node/{db}/_search:
@@ -280,7 +188,7 @@ paths:
           required: true
           in: path
           type: string
-        - description: Unique changeset identifier
+        - description: Unique node identifier
           in: path
           name: id
           required: true
@@ -309,7 +217,7 @@ paths:
           required: true
           in: path
           type: string
-        - description: Unique changeset identifier
+        - description: Unique node identifier
           in: path
           name: id
           required: true
@@ -330,62 +238,6 @@ paths:
           headers: {}
       summary: Partially update fields of a node
       tags: ["Nodes"]
-  /node/{db}/{id}/_history:
-    get:
-      x-swagger-router-controller: Node
-      operationId: getNodeHistory
-      parameters:
-        - description: Database name (e.g. oad)
-          name: db
-          required: true
-          in: path
-          type: string
-        - description: Unique node identifier
-          in: path
-          name: id
-          required: true
-          type: integer
-          format: int64
-      responses:
-        '200':
-          description: OK
-          examples: {}
-          schema:
-            $ref: '#/definitions/Response'
-          headers: {}
-      summary: Get node history
-      tags: ["Nodes", "NotImplementedYet"]
-  /node/{db}/{id}/{revision}:
-    get:
-      x-swagger-router-controller: Node
-      operationId: getNodebyRevision
-      parameters:
-        - description: Database name (e.g. oad)
-          name: db
-          required: true
-          in: path
-          type: string
-        - description: Unique node identifier
-          in: path
-          name: id
-          required: true
-          type: integer
-          format: int64
-        - description: Node revision
-          in: path
-          name: revision
-          required: true
-          type: integer
-          format: int64
-      responses:
-        '200':
-          description: OK
-          examples: {}
-          schema:
-            $ref: '#/definitions/Response'
-          headers: {}
-      summary: Get specific revision of node
-      tags: ["Nodes", "NotImplementedYet"]
   /nativeclient/org/{id}:
     delete:
       x-swagger-router-controller: NativeClient
@@ -604,7 +456,8 @@ paths:
       responses:
         '200':
           description: OK
-          headers: {}
+          schema:
+            type: file
       summary: Get Blob
       tags: ["NativeClient"]
   /blobstore/_create:
