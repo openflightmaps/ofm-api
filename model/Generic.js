@@ -7,8 +7,7 @@ var Promise = require("bluebird");
 var knex = require('../db');
 
 function Generic() {
-  this.kind = "Generic";
-  this.tags = {};
+  this._kind = "Generic";
   this.config = {
     app_url: app_url + '/0.1',
     legacy_mode: legacy_mode,
@@ -41,9 +40,9 @@ Generic.prototype.updateNode = function(db, id, value, create) {
   return new Promise(function(resolve, reject) {
     var db_id = config.dbs.value().by_name[db].id;
     knex.transaction(function(trx) {
-      return config.db(0).transacting(trx).where(config.pk, id).where(config.parent, db_id ).where('Revision', value.revision).increment('Revision', 1).then(function(result) {
+      return config.db(0).transacting(trx).where(config.pk, id).where(config.parent, db_id ).where('Revision', value._rev).increment('Revision', 1).then(function(result) {
         if (!result || result.length == 0) {
-          reject({code: "notfound", message: "revision not found"});
+          reject({code: "notfound", message: "_rev not found"});
           return;
         }
         var attributes = result;
@@ -54,10 +53,13 @@ Generic.prototype.updateNode = function(db, id, value, create) {
         }
 
         var et = config.types.value();
-        var v = value.tags;
-        var keys = Object.keys(v)
+        var keys = Object.keys(value)
         for (var i in keys) {
           var field = keys[i];
+	  // skip special attributes, _id, _rev, _deleted, ...
+	  if (field.startsWith("_"))
+		continue;
+
           var val =  v[keys[i]];
           var wl = et.by_name[field];
           var t = wl.id;
@@ -88,7 +90,7 @@ Generic.prototype.deleteNode = function(db, id, revision) {
           reject({code: "notfound", message: "node not found"});
           return;
         } else {
-          return {id: id};
+          return {_id: String(id)};
         }
       });
     }).then(function(r) {
@@ -129,7 +131,6 @@ Generic.prototype.load = function(db, id) {
       }
       Promise.all(p).then(function(r) {
         var result = [].concat.apply([], r.map(function(x) {return x}));
-        var merged = {};
         var value = undefined;
         var et = config.types.value();
         var result = result.map(function(v) {
@@ -139,6 +140,10 @@ Generic.prototype.load = function(db, id) {
 
           var x = {};
           var wl = et.by_id[t];
+
+          if (wl.hidden == 1) {
+            return;
+          }
 
           if (et.by_id[t].type_format == 6) {
             if (config.blobembed) {
@@ -165,25 +170,24 @@ Generic.prototype.load = function(db, id) {
           }
 	  if (field) {
             if (wl != undefined && wl.multiuse == 1) {
-              if (merged[field] != undefined)
-                merged[field].push(val);
+              if (self[field] != undefined)
+                self[field].push(val);
               else
-	        merged[field] = [val];
+	        self[field] = [val];
             } else {
-              if (merged[field] != undefined)
+              if (self[field] != undefined)
                 console.log("MULTIUSE NOT ALLOWED!" + field); // ABORT!!!
               else
-	        merged[field] = val;
+	        self[field] = val;
             };
           }
 	  return x;
         });
-        self.tags = merged;
-        self.id = id;
-        self.revision = attributes.Revision;
-        self.deleted = attributes.deleted == 1 ? true : false;
-        self.updated = attributes.dateOfCreation;
-        self.userId = attributes.UserID > 0 ? attributes.UserID : undefined;
+        self._id = String(id);
+        self._rev = String(attributes.Revision);
+        self._deleted = attributes.deleted == 1 ? true : false;
+        self._updated = attributes.dateOfCreation;
+        self._userId = attributes.UserID > 0 ? attributes.UserID : undefined;
 
         resolve(self);
       });
@@ -238,6 +242,9 @@ Generic.prototype.searchNode = function(db, query, deleted, bbox, embedresult) {
       };
 
       Promise.all(result).then(function(results) {
+        results = results.map(function(v) {
+          return v.toString();
+        });
         resolve(results);
       });
     });

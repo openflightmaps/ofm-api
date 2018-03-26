@@ -9,7 +9,6 @@ var config = {
   swaggerSecurityHandlers: {
     BasicAuth: function (req, authOrSecDef, scopes, callback) {
       console.log('auth:' + req.headers.authorization);
-      console.log(req);
       let prefix = 'Basic ';
       if (req.headers.authorization && req.headers.authorization.startsWith(prefix)) {
         let value = req.headers.authorization.substr(prefix.length);

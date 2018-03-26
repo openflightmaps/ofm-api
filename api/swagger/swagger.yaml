@@ -4,10 +4,7 @@ info:
   description: >+
     Open flightmap data api.
 
-    Note: Every element and changeset may have any number of tags. A tag is
-    a Key-Value pair of Unicode strings of up to 255 full unicode characters (not
-    bytes) each.
-
+    Note: This is a simple conversion of the current model used by the client for compatbility. It's not indend for public use.
   title: openflightmaps
   version: '0.0.1'
 consumes:
@@ -16,6 +13,163 @@ produces:
   - application/json
 security:
   - BasicAuth: []
+definitions:
+  Database:
+    type: string
+    enum: &DBS
+      - "OAD Pending Changes"
+      - "ION originative suite"
+      - "OAD Private Workspace"
+      - "OAD Static Data"
+      - "Documents Libary"
+      - "AIS map design"
+      - "CFE definition file"
+      - "Map Regions"
+      - "OAD AIRAC Buffer"
+      - "dataOut"
+  NodeProperties:
+    type: object
+    properties:
+      "Flight Information Region":
+        type: string
+      "Last Pending Submission":
+        type: string
+      "Data Entity":
+        type: array
+        items:
+          type: string
+      "PDF Attachment":
+        type: string
+      "Executable File Client":
+        type: string
+      "Executable File Updater":
+        type: string
+      "Version":
+        type: string
+      "Effective":
+        type: string
+      "valid":
+        type: string
+  NodeList:
+    type: object
+    allOf:
+      - $ref: '#/definitions/ResponseData'
+      - type: object
+    required:
+      - items
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Node'
+  Node:
+    type: object
+    allOf:
+      - $ref: '#/definitions/ResponseData'
+      - $ref: '#/definitions/NodeProperties'
+    properties:
+      _id:
+        type: string
+      _rev:
+        type: string
+      _fields:
+        type: string
+      _deleted:
+        type: boolean
+      _updated:
+        type: string
+        format: datetime
+      _userId:
+        type: integer
+    required:
+      - _kind
+      - _id
+      - _rev
+  Tags:
+    additionalProperties:
+      type: string
+    example:
+      - fir: '5'
+      - name: LSMP 5 TMA
+      - type: Ase/Abd
+  RegionList:
+    type: object
+    allOf:
+      - $ref: '#/definitions/ResponseData'
+    properties:
+      items:
+        type: array
+        items:
+          $ref: '#/definitions/Region'
+  Region:
+    type: object
+    properties:
+      id:
+        type: string
+      id_internal:
+        type: integer
+      name:
+        type: string
+    example:
+      name: Wien
+      id: LOVV
+      id_internal: 0
+  NodeQuery:
+    type: object
+    allOf:
+      - $ref: '#/definitions/NodeProperties'
+    additionalProperties:
+      type: string
+    example: {"Flight Information Region": "5", "Type": "Ase/Abd"}
+  ResponseData:
+    type: object
+    discriminator: _kind
+    required:
+      - _kind
+    properties:
+      _kind:
+        type: string
+  NodeNumberList:
+    type: object
+    allOf:
+      - $ref: '#/definitions/ResponseData'
+    required:
+      - nodelist
+    properties:
+      nodelist:
+        type: array
+        items:
+          type: string
+  User:
+    type: object
+    allOf:
+      - $ref: '#/definitions/ResponseData'
+    required:
+      - _id
+    properties:
+      _id:
+        type: string
+      permissions:
+        type: object
+        items:
+          $ref: '#/definitions/Tags'
+      organizations:
+        type: array
+        items:
+          type: integer
+  Organization:
+    type: object
+    allOf:
+      - $ref: '#/definitions/ResponseData'
+    required:
+      - _id
+    properties:
+      _id:
+        type: string
+      permissions:
+        type: object
+        items:
+          $ref: '#/definitions/Tags'
 paths:
   /swagger.json:
     x-swagger-pipe: swagger_raw
@@ -28,7 +182,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/RegionList'
       summary: List all Regions
       tags: ["Information"]   
   /info/userinfo:
@@ -40,20 +194,31 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/User'
       summary: Show user information
       tags: ["Information"]
-  /node/{db}:
+  /node/_all_dbs:
+    get:
+     x-swagger-router-controller: DB
+     operationId: allDbs
+     description: 'return list of all databases'
+     responses:
+        '200':
+          description: OK
+          examples: {}
+          headers: {}
+  /node/{db}/_create:
     post:
       x-swagger-router-controller: Node
       operationId: createNode
       description: ''
       parameters:
-        - description: Database name (e.g. oad)
+        - description: Database name (e.g. "OAD Pending Changes")
           name: db
           required: true
           in: path
           type: string
+          enum: *DBS
         - description: Node definition
           name: body
           required: true
@@ -81,12 +246,18 @@ paths:
           required: true
           in: path
           type: string
-        - description: "Query with name value pairs. e.g. {region: 'LSAS', type: 'Ase/Abd'"
+          enum: *DBS
+        - description: "Query with name value pairs. exact matches. e.g. {region: 'LSAS', type: 'Ase/Abd'"
           in: body
           name: query
           required: true
           schema:
             $ref: '#/definitions/NodeQuery'
+        - description: full text search in Search Tags
+          in: query
+          name: fulltext
+          required: false
+          type: string
         - description: return deleted nodes
           in: query
           name: deleted
@@ -102,7 +273,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/NodeNumberList'
       summary: Search
       tags: ["Nodes"]
   /node/{db}/_multi:
@@ -116,6 +287,7 @@ paths:
           required: true
           in: path
           type: string
+          enum: *DBS
         - description: Unique node identifiers
           in: query
           name: nodes
@@ -125,7 +297,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/NodeList'
           headers: {}
       summary: Get multiple node data
       tags: ["Nodes"]
@@ -139,6 +311,7 @@ paths:
           required: true
           in: path
           type: string
+          enum: *DBS
         - description: Unique node identifier
           in: path
           name: id
@@ -164,6 +337,7 @@ paths:
           required: true
           in: path
           type: string
+          enum: *DBS
         - description: Unique node identifier
           in: path
           name: id
@@ -174,7 +348,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/Node'
           headers: {}
       summary: Get node data
       tags: ["Nodes"]
@@ -188,6 +362,7 @@ paths:
           required: true
           in: path
           type: string
+          enum: *DBS
         - description: Unique node identifier
           in: path
           name: id
@@ -217,6 +392,7 @@ paths:
           required: true
           in: path
           type: string
+          enum: *DBS
         - description: Unique node identifier
           in: path
           name: id
@@ -234,7 +410,7 @@ paths:
           description: OK
           examples: {}
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/Node'
           headers: {}
       summary: Partially update fields of a node
       tags: ["Nodes"]
@@ -254,7 +430,7 @@ paths:
           description: OK
           examples: {}
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/Organization'
           headers: {}
         '404':
           description: Node not found
@@ -275,7 +451,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/Organization'
       summary: Get node data
       tags: ["NativeClient"]
     put:
@@ -294,7 +470,7 @@ paths:
           required: true
           in: body
           schema:
-            $ref: '#/definitions/Node'
+            $ref: '#/definitions/Organization'
       responses:
         '200':
           description: OK
@@ -311,7 +487,7 @@ paths:
           required: true
           in: body
           schema:
-            $ref: '#/definitions/Node'
+            $ref: '#/definitions/Organization'
       responses:
         '200':
           description: OK
@@ -327,7 +503,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/NodeNumberList'
       summary: Search
       tags: ["NativeClient"]
   /nativeclient/user/{id}:
@@ -344,8 +520,6 @@ paths:
       responses:
         '200':
           description: OK
-          schema:
-            $ref: '#/definitions/Response'
           headers: {}
         '404':
           description: Node not found
@@ -366,7 +540,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/Node'
       summary: Get node data
       tags: ["NativeClient"]
     put:
@@ -418,7 +592,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/NodeNumberList'
       summary: Search
       tags: ["NativeClient"]
   /nativeclient/permissions/{id}:
@@ -437,7 +611,7 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/Node'
       summary: Get user permissions
       tags: ["NativeClient"]
   /blobstore/{id}:
@@ -479,153 +653,9 @@ paths:
         '200':
           description: OK
           schema:
-            $ref: '#/definitions/Response'
+            $ref: '#/definitions/Node'
       summary: Create new blob
       tags: ["NativeClient"]
-definitions:
-  NodeList:
-    type: object
-    allOf:
-      - $ref: '#/definitions/ResponseData'
-      - type: object
-    required:
-      - items
-    properties:
-      items:
-        type: array
-        items:
-          $ref: '#/definitions/Node'
-  Node:
-    type: object
-    allOf:
-      - $ref: '#/definitions/ResponseData'
-      - type: object
-    properties:
-      fields:
-        type: string
-      id:
-        type: integer
-        format: int64
-      revision:
-        type: integer
-        format: int64
-      deleted:
-        type: boolean
-      updated:
-        type: string
-        format: datetime
-      userId:
-        type: integer
-      tags:
-        type: object
-        items:
-          $ref: '#/definitions/Tags'
-    required:
-      - kind
-      - id
-      - revision
-  Tags:
-    additionalProperties:
-      type: string
-    example:
-      - fir: '5'
-      - name: LSMP 5 TMA
-      - type: Ase/Abd
-  RegionList:
-    type: object
-    allOf:
-      - $ref: '#/definitions/ResponseData'
-    properties:
-      items:
-        type: array
-        items:
-          $ref: '#/definitions/Region'
-  Region:
-    type: object
-    properties:
-      id:
-        type: string
-      id_internal:
-        type: string
-      name:
-        type: string
-    example:
-      name: Wien
-      id: LOVV
-      id_internal: 0
-  NodeQuery:
-    type: object
-    additionalProperties:
-      type: string
-    example: {"Flight Information Region": "5", "Type": "Ase/Abd"}
-  ResponseData:
-    type: object
-    discriminator: kind
-    required:
-      - kind
-    properties:
-      kind:
-        type: string
-  Response:
-    type: object
-    properties:
-      apiVersion:
-        type: string
-      id:
-        type: string
-      data:
-        $ref: '#/definitions/ResponseData'
-  NodeNumberList:
-    type: object
-    allOf:
-      - $ref: '#/definitions/ResponseData'
-    required:
-      - nodelist
-    properties:
-      nodelist:
-        type: array
-        items:
-          type: integer
-  User:
-    type: object
-    allOf:
-      - $ref: '#/definitions/ResponseData'
-    required:
-      - id
-      - tags
-    properties:
-      id:
-        type: integer
-      tags:
-        type: object
-        items:
-          $ref: '#/definitions/Tags'
-      permissions:
-        type: object
-        items:
-          $ref: '#/definitions/Tags'
-      organizations:
-        type: array
-        items:
-          type: integer
-  Organization:
-    type: object
-    allOf:
-      - $ref: '#/definitions/ResponseData'
-    required:
-      - id
-      - tags
-    properties:
-      id:
-        type: integer
-      tags:
-        type: object
-        items:
-          $ref: '#/definitions/Tags'
-      permissions:
-        type: object
-        items:
-          $ref: '#/definitions/Tags'
 securityDefinitions:
   BasicAuth:
     type: basic

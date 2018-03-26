@@ -10,7 +10,7 @@ module.exports.getMultipleNodes = function (req, res, next) {
   var node = new Node();
   var p = node.getNodes(db, nodes)
   .then(function(result) {
-    return({kind: "NodeList", items: result});
+    return({_kind: "NodeList", items: result});
   });
   helper.handle(p, req, res, next);
 };
@@ -56,7 +56,7 @@ module.exports.searchNode = function (req, res, next) {
   var node = new Node();
   var p = node.searchNode(db, query, deleted, bbox)
   .then(function(data) {
-    var result = {kind: "NodeNumberList", nodelist: data};
+    var result = {_kind: "NodeNumberList", nodelist: data};
     return result;
   })
   helper.handle(p, req, res, next);

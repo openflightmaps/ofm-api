@@ -42,7 +42,7 @@ NativeClient.searchOrgNode = function (req, res, next) {
   var org = new Org();
   var p = org.searchNode('orgs', {}, true, undefined, false)
   .then(function(data) {
-    var result = {kind: "NodeNumberList", nodelist: data};
+    var result = {_kind: "NodeNumberList", nodelist: data};
     return result;
   });
   helper.handle(p, req, res, next);
@@ -52,7 +52,7 @@ NativeClient.searchUserNode = function (req, res, next) {
   var user = new User();
   var p = user.searchNode('users', {}, true, undefined, false)
   .then(function(data) {
-    var result = {kind: "NodeNumberList", nodelist: data};
+    var result = {_kind: "NodeNumberList", nodelist: data};
     return result;
   });
   helper.handle(p, req, res, next);

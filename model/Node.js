@@ -6,7 +6,7 @@ var Generic = require('./Generic');
 function Node() {
   Generic.call(this);
 
-  this.kind = "Node";
+  this._kind = "Node";
   this.config = {
     app_url: this.config.app_url,
     legacy_mode: this.config.legacy_mode,
